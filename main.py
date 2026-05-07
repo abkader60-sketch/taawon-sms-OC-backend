@@ -448,7 +448,13 @@ def generate_password() -> str:
 
 @app.post("/api/v1/admin/init-db")
 async def init_db():
-    conn = await get_conn()
+    try:
+        conn = await get_conn()
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": f"Database connection failed: {str(e)}", "hint": "Check that DATABASE_URL is set in Railway Variables."}
+        )
     try:
         await conn.execute(SCHEMA_SQL)
         await conn.execute(SEED_SQL)
@@ -459,8 +465,6 @@ async def init_db():
                    VALUES (5, $1) ON CONFLICT DO NOTHING""",
                 key,
             )
-        # v0.8 one-time bcrypt migration: any seeded App_User still on the
-        # placeholder hash gets a real bcrypt hash of DEFAULT_SEED_PASSWORD.
         placeholder_users = await conn.fetch(
             "SELECT user_id FROM App_Users WHERE hashed_password = 'temp_hash_123'"
         )
@@ -473,16 +477,21 @@ async def init_db():
                         WHERE user_id = $2""",
                     real_hash, u["user_id"],
                 )
+        return {
+            "status": "ok",
+            "message": "Schema, seeds, and migrations applied.",
+            "default_seed_password_hint": (
+                f"Seeded staff users now log in with '{DEFAULT_SEED_PASSWORD}' "
+                "and will be forced to change it."
+            ),
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": f"SQL execution failed: {str(e)}"}
+        )
     finally:
         await conn.close()
-    return {
-        "status": "ok",
-        "message": "Schema, seeds, and migrations applied.",
-        "default_seed_password_hint": (
-            f"Seeded staff users now log in with '{DEFAULT_SEED_PASSWORD}' "
-            "and will be forced to change it."
-        ),
-    }
 
 
 # ============================================================
@@ -1113,6 +1122,28 @@ async def root():
         "cors_origins": CORS_ORIGINS,
         "auth": "session-cookie",
     }
+
+
+@app.get("/api/v1/health")
+async def health_check():
+    """Test database connectivity. Returns ok/error with details."""
+    try:
+        conn = await get_conn()
+        try:
+            ver = await conn.fetchval("SELECT version()")
+            tables = await conn.fetch(
+                "SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename"
+            )
+            return {
+                "status": "ok",
+                "database": ver.split(",")[0].strip(),
+                "tables": [r["tablename"] for r in tables],
+                "table_count": len(tables),
+            }
+        finally:
+            await conn.close()
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 @app.get("/api/v1/permissions")
