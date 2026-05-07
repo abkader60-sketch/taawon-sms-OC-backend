@@ -397,11 +397,13 @@ INSERT INTO Lookup_Values (table_id, value, label, display_order, is_active)
 SELECT co.table_id, org, org, ROW_NUMBER() OVER (), TRUE
 FROM (VALUES ('SEVEN'), ('ELLISDON'), ('SBG'), ('AECOM'), ('ATKINS')) AS v(org)
 CROSS JOIN co
-ON CONFLICT DO NOTHING;
+ON CONFLICT (table_id, value) DO NOTHING;
 
 -- Seed empty subcontractors lookup (admin populates via UI or Excel import)
-WITH sc AS (SELECT table_id FROM Lookup_Tables WHERE name = 'subcontractors')
-SELECT 1 FROM sc WHERE NOT EXISTS (SELECT 1 FROM Lookup_Values WHERE table_id = sc.table_id);
+INSERT INTO Lookup_Values (table_id, value, label, display_order, is_active)
+SELECT table_id, 'placeholder', 'placeholder', 0, FALSE
+FROM Lookup_Tables WHERE name = 'subcontractors'
+ON CONFLICT DO NOTHING;
 """
 
 MIGRATION_SQL = """
