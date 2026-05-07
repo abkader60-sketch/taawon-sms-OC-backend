@@ -401,7 +401,7 @@ ON CONFLICT DO NOTHING;
 
 -- Seed empty subcontractors lookup (admin populates via UI or Excel import)
 WITH sc AS (SELECT table_id FROM Lookup_Tables WHERE name = 'subcontractors')
-SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM Lookup_Values WHERE table_id = sc.table_id);
+SELECT 1 FROM sc WHERE NOT EXISTS (SELECT 1 FROM Lookup_Values WHERE table_id = sc.table_id);
 """
 
 MIGRATION_SQL = """
