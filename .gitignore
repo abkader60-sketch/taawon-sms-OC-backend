@@ -1,0 +1,37 @@
+# Secrets - NEVER commit
+.env
+*.env
+!*.env.example
+
+# User uploads
+uploads/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Postgres binaries (if checked in by mistake)
+Db/
+
+# Local logs
+*.log
+logfile.txt
+
+# Test/scratch
+*.bak
+*.tmp
