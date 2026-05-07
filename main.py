@@ -73,7 +73,7 @@ from pydantic import BaseModel
 # ============================================================
 #  Configuration
 # ============================================================
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent
 ENV_FILE = PROJECT_ROOT / ".env"
 load_dotenv(ENV_FILE)
 load_dotenv(Path(__file__).resolve().parent / ".env")
