@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SpeakEasy — Practice English</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-top">
+        <div>
+          <div class="logo">Speak<span>Easy</span></div>
+          <div class="header-subtitle" id="headerSubtitle">Practice English in real-life scenarios</div>
+        </div>
+        <div class="header-controls">
+          <select class="accent-selector" id="accentSelect"></select>
+        </div>
+      </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" id="breadcrumb"></nav>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== SCREEN: Home ===== -->
+    <section class="screen active" id="screen-home">
+      <div class="content">
+        <h2 class="section-title" id="headerTitle">SpeakEasy</h2>
+        <div class="env-grid" id="envGrid">
+          <div class="loading"><div class="spinner"></div><p>Loading environments...</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: Keywords ===== -->
+    <section class="screen" id="screen-keywords">
+      <div class="content">
+        <button class="back-btn" onclick="App.navigate('home')">← Back to environments</button>
+        <h2 class="section-title" id="keywordsTitle">Keywords</h2>
+        <div class="env-description" id="envDescription"></div>
+        <div class="keyword-list" id="keywordList">
+          <div class="loading"><div class="spinner"></div><p>Loading keywords...</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: Statements ===== -->
+    <section class="screen" id="screen-statements">
+      <div class="content">
+        <button class="back-btn" onclick="App.goBackToKeywords()">← Back to keywords</button>
+        <h2 class="section-title" id="statementsTitle">Statements</h2>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:12px">
+          Practicing: <strong id="statementWord" style="color:var(--primary)"></strong>
+        </p>
+        <div class="statement-list" id="statementList">
+          <div class="loading"><div class="spinner"></div><p>Loading statements...</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: Speaking ===== -->
+    <section class="screen" id="screen-speaking">
+      <div class="content">
+        <button class="back-btn" onclick="App.goBackToStatements()">← Back to statements</button>
+        <h2 class="section-title">Speaking Practice</h2>
+        <div class="speaking-screen" id="speakingScreen">
+          <div class="loading"><div class="spinner"></div><p>Loading...</p></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/audio-controller.js"></script>
+  <script src="js/speech-engine.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Populate accent selector from environments data
+    document.addEventListener('DOMContentLoaded', function() {
+      const sel = document.getElementById('accentSelect');
+      const accents = [
+        { id: 'american_ga', label: 'American English', flag: 'US' },
+        { id: 'british_rp', label: 'British English (Standard)', flag: 'GB' },
+        { id: 'british_estuary', label: 'British English (Everyday)', flag: 'GB' }
+      ];
+      sel.innerHTML = accents.map(a =>
+        `<option value="${a.id}">${a.flag === 'US' ? '🇺🇸' : '🇬🇧'} ${a.label}</option>`
+      ).join('');
+    });
+
+    // Back navigation helpers
+    App.goBackToKeywords = function() {
+      AppState.currentKeyword = null;
+      AppState.currentStatement = null;
+      App.navigate('keywords', { env: AppState.currentEnv, envData: AppState.currentEnvData });
+    };
+    App.goBackToStatements = function() {
+      AppState.currentStatement = null;
+      App.navigate('statements', { keyword: AppState.currentKeyword });
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+﻿{
+  "environment_id": "taxi_transport",
+  "environment_name": "In a Taxi or Rideshare",
+  "environment_icon": "taxi",
+  "difficulty": "beginner",
+  "description": "Key phrases for taking taxis, rideshares, and interacting with drivers in English-speaking countries.",
+  "regional_notes": {
+    "vocabulary_differences": {
+      "trunk": { "american": "trunk", "british": "boot" },
+      "front_seat": { "american": "shotgun / front seat", "british": "front seat" },
+      "gas_station": { "american": "gas station", "british": "petrol station" },
+      "highway": { "american": "highway / freeway", "british": "motorway" }
+    }
+  },
+  "keywords": [
+    {
+      "keyword_id": "taxi_drop_off",
+      "word": "drop off",
+      "part_of_speech": "phrasal verb",
+      "definition": "To take someone by vehicle to a place and leave them there.",
+      "difficulty": "beginner",
+      "tags": ["directions", "arrival", "requests"],
+      "statements": [
+        {
+          "statement_id": "taxi_drop_off_001",
+          "text": "Could you drop me off at the main entrance, please?",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [10, 18],
+          "usage_note": "Standard phrasal verb for being left at a destination.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kʊd juː drɒp miː ɒf æt ðə meɪn ˈɛntrəns pleɪz/" },
+            "british_rp": { "ipa_transcription": "/kʊd juː drɒp miː ɒf æt ðə meɪn ˈɛntrəns pliːz/" },
+            "british_estuary": { "ipa_transcription": "/kʊd juː drɒp miː ɒf æʔ ðə meɪn ˈɛntrəns pliːz/" }
+          }
+        },
+        {
+          "statement_id": "taxi_drop_off_002",
+          "text": "Just drop me off anywhere along here — this is fine.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [5, 13],
+          "usage_note": "Flexible about the exact drop spot.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/dʒʌst drɒp miː ɒf ˈɛnɪwɛər əˈlɒŋ hɪər ðɪs ɪz faɪn/" },
+            "british_rp": { "ipa_transcription": "/dʒʌst drɒp miː ɒf ˈɛnɪwɛə əˈlɒŋ hɪə ðɪs ɪz faɪn/" },
+            "british_estuary": { "ipa_transcription": "/dʒʌst drɒp miː ɒf ˈɛnɪwɛə əˈlɒŋ hɪə ðɪs ɪz faɪn/" }
+          }
+        },
+        {
+          "statement_id": "taxi_drop_off_003",
+          "text": "Can you drop me off before the traffic lights? I'll walk from there.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [7, 15],
+          "usage_note": "Useful when a specific spot is blocked.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kæn juː drɒp miː ɒf bɪˈfɔːr ðə ˈtræfɪk laɪts aɪl wɔːk frəm ðɛr/" },
+            "british_rp": { "ipa_transcription": "/kæn juː drɒp miː ɒf bɪˈfɔː ðə ˈtræfɪk laɪts aɪl wɔːk frəm ðɛə/" },
+            "british_estuary": { "ipa_transcription": "/kæn juː drɒp miː ɒf bɪˈfɔː ðə ˈtræfɪk laɪts aɪl wɔːk frəm ðɛə/" }
+          }
+        },
+        {
+          "statement_id": "taxi_drop_off_004",
+          "text": "There's a drop-off zone right outside the hotel.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [10, 19],
+          "usage_note": "The designated area for setting down passengers.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ðɛrz ə drɒp ɒf zoʊn raɪt ˈaʊtsaɪd ðə hoʊˈtɛl/" },
+            "british_rp": { "ipa_transcription": "/ðɛəz ə drɒp ɒf zəʊn raɪt ˈaʊtsaɪd ðə həʊˈtɛl/" },
+            "british_estuary": { "ipa_transcription": "/ðɛəz ə drɒp ɒf zəʊn raɪʔ ˈaʊtsaɪd ðə həʊˈtɛl/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "taxi_route",
+      "word": "route",
+      "part_of_speech": "noun",
+      "definition": "The path taken to get from one place to another.",
+      "difficulty": "beginner",
+      "tags": ["navigation", "directions", "journey"],
+      "statements": [
+        {
+          "statement_id": "taxi_route_001",
+          "text": "Which route are you taking? The motorway or through town?",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [6, 11],
+          "usage_note": "Checking the driver's plan. 'Motorway' is British.",
+          "regional_variant_note": "American version: 'Which route are you taking? The highway or through town?'",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wɪtʃ ruːt ɑːr juː ˈteɪkɪŋ ðə ˈhaɪweɪ ɔːr θruː taʊn/" },
+            "british_rp": { "ipa_transcription": "/wɪtʃ raʊt ə juː ˈteɪkɪŋ ðə ˈməʊtəweɪ ɔː θruː taʊn/" },
+            "british_estuary": { "ipa_transcription": "/wɪtʃ raʊt ə juː ˈteɪkɪŋ ðə ˈməʊtəweɪ ɔː θruː taʊn/" }
+          }
+        },
+        {
+          "statement_id": "taxi_route_002",
+          "text": "Is this the quickest route at this time of day?",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [17, 22],
+          "usage_note": "Awareness that traffic varies by time.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ɪz ðɪs ðə ˈkwɪkɪst ruːt æt ðɪs taɪm əv deɪ/" },
+            "british_rp": { "ipa_transcription": "/ɪz ðɪs ðə ˈkwɪkɪst raʊt æt ðɪs taɪm əv deɪ/" },
+            "british_estuary": { "ipa_transcription": "/ɪz ðɪs ðə ˈkwɪkɪst raʊt æʔ ðɪs taɪm əv deɪ/" }
+          }
+        },
+        {
+          "statement_id": "taxi_route_003",
+          "text": "The GPS is showing a faster route — would you like me to direct you?",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [25, 30],
+          "usage_note": "Polite way to offer navigation help.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ðə dʒiːpiːɛs ɪz ˈʃoʊɪŋ ə ˈfæstər ruːt wʊd juː laɪk miː tə dɪˈrɛkt juː/" },
+            "british_rp": { "ipa_transcription": "/ðə dʒiːpiːɛs ɪz ˈʃəʊɪŋ ə ˈfɑːstə raʊt wʊd juː laɪk miː tə dɪˈrɛkt juː/" },
+            "british_estuary": { "ipa_transcription": "/ðə dʒiːpiːɛs ɪz ˈʃəʊɪŋ ə ˈfɑːstə raʊt wʊd juː laɪk miː tə dɪˈrɛkt juː/" }
+          }
+        },
+        {
+          "statement_id": "taxi_route_004",
+          "text": "Sorry, I'm not familiar with this route — I'm not from around here.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [28, 33],
+          "usage_note": "What a driver might say to explain their unfamiliarity.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈsɒri aɪm nɒt fəˈmɪliər wɪð ðɪs ruːt aɪm nɒt frəm əˈraʊnd hɪər/" },
+            "british_rp": { "ipa_transcription": "/ˈsɒri aɪm nɒt fəˈmɪliə wɪð ðɪs raʊt aɪm nɒt frəm əˈraʊnd hɪə/" },
+            "british_estuary": { "ipa_transcription": "/ˈsɒri aɪm nɒt fəˈmɪliə wɪð ðɪs raʊt aɪm nɒt frəm əˈraʊnd hɪə/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "taxi_rush",
+      "word": "rush",
+      "part_of_speech": "verb / noun",
+      "definition": "To hurry, or a period of intense busy activity (rush hour).",
+      "difficulty": "beginner",
+      "tags": ["time", "urgency", "traffic"],
+      "statements": [
+        {
+          "statement_id": "taxi_rush_001",
+          "text": "I'm in a bit of a rush — could you take the fastest way?",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [14, 19],
+          "usage_note": "Softened way to express urgency.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪm ɪn ə bɪt əv ə rʌʃ kʊd juː teɪk ðə ˈfæstɪst weɪ/" },
+            "british_rp": { "ipa_transcription": "/aɪm ɪn ə bɪt əv ə rʌʃ kʊd juː teɪk ðə ˈfɑːstɪst weɪ/" },
+            "british_estuary": { "ipa_transcription": "/aɪm ɪn ə bɪʔ əv ə rʌʃ kʊd juː teɪk ðə ˈfɑːstɪst weɪ/" }
+          }
+        },
+        {
+          "statement_id": "taxi_rush_002",
+          "text": "Don't worry, there's no rush — take your time.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [22, 27],
+          "usage_note": "Reassuring the driver.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/doʊnt ˈwʌri ðɛrz noʊ rʌʃ teɪk jər taɪm/" },
+            "british_rp": { "ipa_transcription": "/dəʊnt ˈwʌri ðɛəz nəʊ rʌʃ teɪk jə taɪm/" },
+            "british_estuary": { "ipa_transcription": "/dəʊnt ˈwʌri ðɛəz nəʊ rʌʃ teɪk jə taɪm/" }
+          }
+        },
+        {
+          "statement_id": "taxi_rush_003",
+          "text": "The traffic is terrible at rush hour — we might be late.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [26, 30],
+          "usage_note": "'Rush hour' as a fixed phrase.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ðə ˈtræfɪk ɪz ˈtɛrɪbl æt rʌʃ ˈaʊər wiː maɪt biː leɪt/" },
+            "british_rp": { "ipa_transcription": "/ðə ˈtræfɪk ɪz ˈtɛrɪbl æt rʌʃ ˈaʊə wiː maɪt biː leɪt/" },
+            "british_estuary": { "ipa_transcription": "/ðə ˈtræfɪk ɪz ˈtɛrɪbl æʔ rʌʃ ˈaʊə wiː maɪʔ biː leɪʔ/" }
+          }
+        },
+        {
+          "statement_id": "taxi_rush_004",
+          "text": "No need to rush — my flight isn't until nine.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [8, 13],
+          "usage_note": "Reassuring the driver there's no hurry.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/noʊ niːd tə rʌʃ maɪ flaɪt ˈɪznt ənˈtɪl naɪn/" },
+            "british_rp": { "ipa_transcription": "/nəʊ niːd tə rʌʃ maɪ flaɪt ˈɪznt ənˈtɪl naɪn/" },
+            "british_estuary": { "ipa_transcription": "/nəʊ niːd tə rʌʃ maɪ flaɪʔ ˈɪznt ənˈtɪl naɪn/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "taxi_confirm",
+      "word": "confirm",
+      "part_of_speech": "verb",
+      "definition": "To state or show that something is definitely true or correct.",
+      "difficulty": "beginner",
+      "tags": ["communication", "clarity", "safety"],
+      "statements": [
+        {
+          "statement_id": "taxi_confirm_001",
+          "text": "Can you confirm the address? I want to make sure we have the right place.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [7, 14],
+          "usage_note": "Always good to confirm before the journey starts.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kæn juː kənˈfɜːrm ðə ˈædrɛs aɪ wɒnt tə meɪk ʃʊər wiː hæv ðə raɪt pleɪs/" },
+            "british_rp": { "ipa_transcription": "/kæn juː kənˈfɜːm ðə ˈædrɛs aɪ wɒnt tə meɪk ʃʊə wiː hæv ðə raɪt pleɪs/" },
+            "british_estuary": { "ipa_transcription": "/kæn juː kənˈfɜːm ðə ˈædrɛs aɪ wɒnt tə meɪk ʃʊə wiː æv ðə raɪt pleɪs/" }
+          }
+        },
+        {
+          "statement_id": "taxi_confirm_002",
+          "text": "Your booking is confirmed — the driver will arrive in five minutes.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [14, 23],
+          "usage_note": "What an app or dispatcher says back.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/jər ˈbʊkɪŋ ɪz kənˈfɜːrmd ðə ˈdraɪvər wɪl əˈraɪv ɪn faɪv ˈmɪnɪts/" },
+            "british_rp": { "ipa_transcription": "/jə ˈbʊkɪŋ ɪz kənˈfɜːmd ðə ˈdraɪvə wɪl əˈraɪv ɪn faɪv ˈmɪnɪts/" },
+            "british_estuary": { "ipa_transcription": "/jə ˈbʊkɪŋ ɪz kənˈfɜːmd ðə ˈdraɪvə wɪl əˈraɪv ɪn faɪv ˈmɪnɪts/" }
+          }
+        },
+        {
+          "statement_id": "taxi_confirm_003",
+          "text": "Could you confirm my name before we set off?",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [10, 17],
+          "usage_note": "A safety habit — verifying identity before departure.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kʊd juː kənˈfɜːrm maɪ neɪm bɪˈfɔːr wiː sɛt ɒf/" },
+            "british_rp": { "ipa_transcription": "/kʊd juː kənˈfɜːm maɪ neɪm bɪˈfɔː wiː sɛt ɒf/" },
+            "british_estuary": { "ipa_transcription": "/kʊd juː kənˈfɜːm maɪ neɪm bɪˈfɔː wiː sɛʔ ɒf/" }
+          }
+        }
+      ]
+    }
+  ]
+}

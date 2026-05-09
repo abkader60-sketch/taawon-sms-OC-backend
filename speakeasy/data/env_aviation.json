@@ -1,0 +1,340 @@
+﻿{
+  "environment_id": "aviation",
+  "environment_name": "Aviation & Air Travel",
+  "environment_icon": "airport",
+  "difficulty": "intermediate",
+  "description": "Essential phrases for aviation communication — cockpit crew, cabin crew, and air traffic control interactions.",
+  "regional_notes": {
+    "vocabulary_differences": {
+      "takeoff": { "american": "takeoff", "british": "take-off" },
+      "airplane": { "american": "airplane", "british": "aeroplane" },
+      "baggage": { "american": "baggage / luggage", "british": "luggage" },
+      "terminal": { "american": "gate / terminal", "british": "terminal" },
+      "flight_attendant": { "american": "flight attendant", "british": "cabin crew" }
+    }
+  },
+  "keywords": [
+    {
+      "keyword_id": "aviation_clearance",
+      "word": "clearance",
+      "part_of_speech": "noun",
+      "definition": "Authorization from air traffic control to proceed with a specific action (takeoff, landing, etc.).",
+      "difficulty": "intermediate",
+      "tags": ["ATC", "communication", "safety"],
+      "statements": [
+        {
+          "statement_id": "aviation_clearance_001",
+          "text": "Tower, this is Delta 742 — requesting takeoff clearance, runway 27 right.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [30, 39],
+          "usage_note": "Standard call to ATC. State your airline + flight number first, then request.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈtaʊər ðɪs ɪz ˈdɛltə ˈsɛvən ˈfɔr ˈtuː rɪˈkwɛstɪŋ ˈteɪkˌɔf ˈklɪrəns ˈrʌnˌweɪ ˈtwɛnti ˈsɛvən raɪt/" },
+            "british_rp": { "ipa_transcription": "/ˈtaʊə ðɪs ɪz ˈdɛltə ˈsɛvən fɔː tuː rɪˈkwɛstɪŋ ˈteɪkˌɒf ˈklɪərəns ˈrʌnweɪ ˈtwɛnti ˈsɛvən raɪt/" },
+            "british_estuary": { "ipa_transcription": "/ˈtaʊə ðɪs ɪz ˈdɛltə ˈsɛvən fɔː tuː rɪˈkwɛstɪŋ ˈteɪkˌɒf ˈklɪərəns ˈrʌnweɪ ˈtwɛni ˈsɛvən raɪt/" }
+          }
+        },
+        {
+          "statement_id": "aviation_clearance_002",
+          "text": "Delta 742, you are cleared for takeoff, runway 27 right. Wind 270 at 12 knots.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [24, 31],
+          "usage_note": "ATC response — 'cleared for' is the standard authorization phrasing.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈdɛltə ˈsɛvən ˈfɔr ˈtuː juː ɑr ˈklɪrd fɔr ˈteɪkˌɔf ˈrʌnˌweɪ ˈtwɛnti ˈsɛvən raɪt wɪnd ˈtwɛnti ˈsɛvənti æt twɛlv nɑts/" },
+            "british_rp": { "ipa_transcription": "/ˈdɛltə ˈsɛvən fɔː tuː juː ɑː ˈklɪəd fɔː ˈteɪkˌɒf ˈrʌnweɪ ˈtwɛnti ˈsɛvən raɪt wɪnd ˈtwɛnti ˈsɛvənti æt twɛlv nɒts/" },
+            "british_estuary": { "ipa_transcription": "/ˈdɛltə ˈsɛvən fɔː tuː jə ˈklɪəd fɔː ˈteɪkˌɒf ˈrʌnweɪ ˈtwɛni ˈsɛvən raɪt wɪnd ˈtwɛnti ˈsɛvənti æʔ twɛlv nɒts/" }
+          }
+        },
+        {
+          "statement_id": "aviation_clearance_003",
+          "text": "We're holding short of the runway — awaiting clearance from the tower.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [34, 43],
+          "usage_note": "'Holding short' means stopped before the runway edge, waiting.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wɪr ˈhoʊldɪŋ ʃɔrt ʌv ðə ˈrʌnˌweɪ əˈweɪtɪŋ ˈklɪrəns frəm ðə ˈtaʊər/" },
+            "british_rp": { "ipa_transcription": "/wɪə ˈhəʊldɪŋ ʃɔːt ɒv ðə ˈrʌnweɪ əˈweɪtɪŋ ˈklɪərəns frəm ðə ˈtaʊə/" },
+            "british_estuary": { "ipa_transcription": "/wɪə ˈhəʊldɪŋ ʃɔːt ɒv ðə ˈrʌnweɪ əˈweɪtɪŋ ˈklɪərəns frəm ðə ˈtaʊə/" }
+          }
+        },
+        {
+          "statement_id": "aviation_clearance_004",
+          "text": "Cabin crew, prepare for takeoff — we have received clearance.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [47, 56],
+          "usage_note": "Captain's announcement to the cabin crew before departure.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈkæbɪn kruː priˈpɛr fɔr ˈteɪkˌɔf wiː hæv rɪˈsivd ˈklɪrəns/" },
+            "british_rp": { "ipa_transcription": "/ˈkæbɪn kruː prɪˈpɛə fɔː ˈteɪkɒf wiː hæv rɪˈsiːvd ˈklɪərəns/" },
+            "british_estuary": { "ipa_transcription": "/ˈkæbɪn kruː prɪˈpɛə fɔː ˈteɪkɒf wiː æv rɪˈsiːvd ˈklɪərəns/" }
+          }
+        },
+        {
+          "statement_id": "aviation_clearance_005",
+          "text": "Cleared to land, runway 09 left. The visibility is 3 kilometers.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [0, 7],
+          "usage_note": "'Cleared to land' is the standard ATC landing authorization.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈklɪrd tə lænd ˈrʌnˌweɪ ˈzɪroʊ naɪn lɛft ðə ˌvɪzəˈbɪləti ɪz θriː kɪˈlɑmətərz/" },
+            "british_rp": { "ipa_transcription": "/ˈklɪəd tə lænd ˈrʌnweɪ ˈzɪərəʊ naɪn lɛft ðə ˌvɪzəˈbɪlɪti ɪz θriː kɪˈlɒmɪtəz/" },
+            "british_estuary": { "ipa_transcription": "/ˈklɪəd tə lænd ˈrʌnweɪ ˈzɪərəʊ naɪn lɛfʔ ðə ˌvɪzəˈbɪlɪti ɪz θriː kɪˈlɒmɪtəz/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "aviation_altitude",
+      "word": "altitude",
+      "part_of_speech": "noun",
+      "definition": "The height of the aircraft above sea level, measured in feet.",
+      "difficulty": "intermediate",
+      "tags": ["navigation", "flight", "instrumentation"],
+      "statements": [
+        {
+          "statement_id": "aviation_altitude_001",
+          "text": "Climb and maintain flight level 330 — our cruising altitude.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [44, 52],
+          "usage_note": "Flight levels (FL) are altitudes in hundreds of feet. FL330 = 33,000 feet.",
+          "cultural_note": "In aviation, altitudes above 18,000 feet in the US are referred to as 'flight levels' and use standard pressure setting (29.92 inHg / 1013 hPa).",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/klaɪm ænd meɪnˈteɪn flaɪt ˈlɛvəl θriː ˈθɜːrti ˈaʊər ˈkruːzɪŋ ˈæltɪˌtuːd/" },
+            "british_rp": { "ipa_transcription": "/klaɪm ænd meɪnˈteɪn flaɪt ˈlɛvəl θriː ˈθɜːti ˈaʊə ˈkruːzɪŋ ˈæltɪtjuːd/" },
+            "british_estuary": { "ipa_transcription": "/klaɪm æn meɪnˈteɪn flaɪʔ ˈlɛvəl θriː ˈθɜːti ˈaʊə ˈkruːzɪŋ ˈæltɪtjuːd/" }
+          }
+        },
+        {
+          "statement_id": "aviation_altitude_002",
+          "text": "We're descending to 10,000 feet — please fasten your seatbelts.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [6, 15],
+          "usage_note": "Common cabin announcement during descent.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wɪr dɪˈsɛndɪŋ tə ˈtɛn ˈθaʊzənd fiːt pliːz ˈfæsən jɔr ˈsiːtbɛlts/" },
+            "british_rp": { "ipa_transcription": "/wɪə dɪˈsɛndɪŋ tə ˈtɛn ˈθaʊzənd fiːt pliːz ˈfɑːsən jɔː ˈsiːtbɛlts/" },
+            "british_estuary": { "ipa_transcription": "/wɪə dɪˈsɛndɪŋ tə ˈtɛn ˈθaʊzən fiːʔ pliːz ˈfɑːsən jɔː ˈsiːbɛlts/" }
+          }
+        },
+        {
+          "statement_id": "aviation_altitude_003",
+          "text": "ATC, we have a request — can we change altitude? We're experiencing turbulence.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [38, 46],
+          "usage_note": "Pilot requesting a different flight level due to conditions.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/eɪ tiː siː wiː hæv ə rɪˈkwɛst kæn wiː tʃeɪndʒ ˈæltɪtuːd wɪr ɪkˈspɪriənsɪŋ ˈtɜːrbjələns/" },
+            "british_rp": { "ipa_transcription": "/eɪ tiː siː wiː hæv ə rɪˈkwɛst kæn wiː tʃeɪndʒ ˈæltɪtjuːd wɪər ɪkˈspɪəriənsɪŋ ˈtɜːbjʊləns/" },
+            "british_estuary": { "ipa_transcription": "/eɪ tiː siː wiː æv ə rɪˈkwɛst kæn wiː tʃeɪndʒ ˈæltɪtjuːd wɪər ɪkˈspɪərɪənsɪŋ ˈtɜːbjʊləns/" }
+          }
+        },
+        {
+          "statement_id": "aviation_altitude_004",
+          "text": "Maintain your present altitude — there is conflicting traffic at your 2 o'clock.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [18, 26],
+          "usage_note": "ATC instructing a pilot to stay at current level. '2 o'clock' is a directional reference used in aviation.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/meɪnˈteɪn jɔr ˈprɛzənt ˈæltɪtuːd ðɛr ɪz kənˈflɪktɪŋ ˈtræfɪk æt jɔr tuː əˈklɑk/" },
+            "british_rp": { "ipa_transcription": "/meɪnˈteɪn jɔː ˈprɛzənt ˈæltɪtjuːd ðɛər ɪz kənˈflɪktɪŋ ˈtræfɪk æt jɔː tuː əˈklɒk/" },
+            "british_estuary": { "ipa_transcription": "/meɪnˈteɪn jɔː ˈprɛzənt ˈæltɪtjuːd ðɛər ɪz kənˈflɪktɪŋ ˈtræfɪk æʔ jɔː tuː əˈklɒk/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "aviation_approach",
+      "word": "approach",
+      "part_of_speech": "noun / verb",
+      "definition": "The phase of flight when the aircraft prepares to land, or the specific path used to land.",
+      "difficulty": "intermediate",
+      "tags": ["landing", "navigation", "procedure"],
+      "statements": [
+        {
+          "statement_id": "aviation_approach_001",
+          "text": "Delta 742 is on final approach to runway 27 right.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [22, 30],
+          "usage_note": "'Final approach' — the last straight segment before landing.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈdɛltə ˈsɛvən ˈfɔr ˈtuː ɪz ɒn ˈfaɪnəl əˈproʊʧ tə ˈrʌnˌweɪ ˈtwɛnti ˈsɛvən raɪt/" },
+            "british_rp": { "ipa_transcription": "/ˈdɛltə ˈsɛvən fɔː tuː ɪz ɒn ˈfaɪnəl əˈprəʊʧ tə ˈrʌnweɪ ˈtwɛnti ˈsɛvən raɪt/" },
+            "british_estuary": { "ipa_transcription": "/ˈdɛltə ˈsɛvən fɔː tuː ɪz ɒn ˈfaɪnəl əˈprəʊʧ tə ˈrʌnweɪ ˈtwɛni ˈsɛvən raɪt/" }
+          }
+        },
+        {
+          "statement_id": "aviation_approach_002",
+          "text": "Go around! The runway is not clear — abort the approach.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [44, 52],
+          "usage_note": "'Go around' is the command to abort landing and re-enter the traffic pattern. Mayday-level urgency.",
+          "cultural_note": "A go-around is a normal safety procedure, not an emergency. Pilots train for it regularly in simulators.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ɡoʊ əˈraʊnd ðə ˈrʌnˌweɪ ɪz nɑt klɪr əˈbɔrt ði əˈproʊʧ/" },
+            "british_rp": { "ipa_transcription": "/ɡəʊ əˈraʊnd ðə ˈrʌnweɪ ɪz nɒt klɪə əˈbɔːt ði əˈprəʊʧ/" },
+            "british_estuary": { "ipa_transcription": "/ɡəʊ əˈraʊn ðə ˈrʌnweɪ ɪz nɒʔ klɪə əˈbɔːt ði əˈprəʊʧ/" }
+          }
+        },
+        {
+          "statement_id": "aviation_approach_003",
+          "text": "We're number two for approach — there is a 737 ahead of us.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [17, 25],
+          "usage_note": "'Number two for approach' means second in the landing sequence.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wɪr ˈnʌmbər tuː fɔr əˈproʊʧ ðɛr ɪz ə ˈsɛvən θɜːrti ˈsɛvən əˈhɛd ʌv ʌs/" },
+            "british_rp": { "ipa_transcription": "/wɪə ˈnʌmbə tuː fɔːr əˈprəʊʧ ðɛər ɪz ə ˈsɛvən θɜːti ˈsɛvən əˈhɛd ɒv ʌs/" },
+            "british_estuary": { "ipa_transcription": "/wɪə ˈnʌmbə tuː fɔːr əˈprəʊʧ ðɛər ɪz ə ˈsɛvən θɜːti ˈsɛvən əˈhɛd ɒv ʌs/" }
+          }
+        },
+        {
+          "statement_id": "aviation_approach_004",
+          "text": "Establishing the ILS approach for runway 09 left.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [20, 28],
+          "usage_note": "ILS stands for Instrument Landing System — a precision radio navigation aid.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ɪˈstæblɪʃɪŋ ði aɪ ɛl ɛs əˈproʊʧ fɔr ˈrʌnˌweɪ ˈzɪroʊ naɪn lɛft/" },
+            "british_rp": { "ipa_transcription": "/ɪˈstæblɪʃɪŋ ði aɪ ɛl ɛs əˈprəʊʧ fɔː ˈrʌnweɪ ˈzɪərəʊ naɪn lɛft/" },
+            "british_estuary": { "ipa_transcription": "/ɪˈstæblɪʃɪŋ ði aɪ ɛl ɛs əˈprəʊʧ fɔː ˈrʌnweɪ ˈzɪərəʊ naɪn lɛfʔ/" }
+          }
+        },
+        {
+          "statement_id": "aviation_approach_005",
+          "text": "Cabin crew, 5 minutes to landing — complete the approach checklist.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [43, 51],
+          "usage_note": "Captain informing cabin crew of imminent landing.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈkæbɪn kruː faɪv ˈmɪnɪts tə ˈlændɪŋ kəmˈpliːt ði əˈproʊʧ ˈʧɛkˌlɪst/" },
+            "british_rp": { "ipa_transcription": "/ˈkæbɪn kruː faɪv ˈmɪnɪts tə ˈlændɪŋ kəmˈpliːt ði əˈprəʊʧ ˈʧɛklɪst/" },
+            "british_estuary": { "ipa_transcription": "/ˈkæbɪn kruː faɪv ˈmɪnɪts tə ˈlændɪŋ kəmˈpliːʔ ði əˈprəʊʧ ˈʧɛklɪs/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "aviation_turbulence",
+      "word": "turbulence",
+      "part_of_speech": "noun",
+      "definition": "Irregular or violent movement of air causing the aircraft to shake or bump.",
+      "difficulty": "intermediate",
+      "tags": ["weather", "safety", "passenger"],
+      "statements": [
+        {
+          "statement_id": "aviation_turbulence_001",
+          "text": "Ladies and gentlemen, we are experiencing some turbulence — please remain seated.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [43, 53],
+          "usage_note": "Standard passenger announcement during rough air.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈleɪdiz ænd ˈʤɛntlmən wiː ɑr ɪkˈspɪriənsɪŋ sʌm ˈtɜːrbjələns pliːz rɪˈmeɪn ˈsiːtɪd/" },
+            "british_rp": { "ipa_transcription": "/ˈleɪdiz ænd ˈʤɛntlmən wiː ɑːr ɪkˈspɪəriənsɪŋ sʌm ˈtɜːbjʊləns pliːz rɪˈmeɪn ˈsiːtɪd/" },
+            "british_estuary": { "ipa_transcription": "/ˈleɪdiz æn ˈʤɛntlmən wiː ɑːr ɪkˈspɪərɪənsɪŋ sʌm ˈtɜːbjʊləns pliːz rɪˈmeɪn ˈsiːtɪd/" }
+          }
+        },
+        {
+          "statement_id": "aviation_turbulence_002",
+          "text": "Flight deck, we have injured passengers due to unexpected turbulence.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [54, 64],
+          "usage_note": "Cabin crew reporting to pilots after a severe turbulence event.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/flaɪt dɛk wiː hæv ˈɪnʤərd ˈpæsɪnʤərz djuː tuː ˌʌnɪkˈspɛktɪd ˈtɜːrbjələns/" },
+            "british_rp": { "ipa_transcription": "/flaɪt dɛk wiː hæv ˈɪnʤəd ˈpæsɪnʤəz djuː tuː ˌʌnɪkˈspɛktɪd ˈtɜːbjʊləns/" },
+            "british_estuary": { "ipa_transcription": "/flaɪʔ dɛk wiː æv ˈɪnʤəd ˈpæsɪnʤəz dʒuː tə ˌʌnɪkˈspɛktɪd ˈtɜːbjʊləns/" }
+          }
+        },
+        {
+          "statement_id": "aviation_turbulence_003",
+          "text": "We're forecasting moderate chop ahead — I'm turning on the seatbelt sign.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [23, 27],
+          "usage_note": "'Chop' is pilot slang for light to moderate turbulence.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wɪr ˈfɔːrkæstɪŋ ˈmɑdərət ʧɑp əˈhɛd aɪm ˈtɜːrnɪŋ ɒn ðə ˈsiːtbɛlt saɪn/" },
+            "british_rp": { "ipa_transcription": "/wɪə ˈfɔːkɑːstɪŋ ˈmɒdərət ʧɒp əˈhɛd aɪm ˈtɜːnɪŋ ɒn ðə ˈsiːtbɛlt saɪn/" },
+            "british_estuary": { "ipa_transcription": "/wɪə ˈfɔːkɑːstɪŋ ˈmɒdərət ʧɒp əˈhɛd aɪm ˈtɜːnɪŋ ɒn ðə ˈsiːbɛlt saɪn/" }
+          }
+        },
+        {
+          "statement_id": "aviation_turbulence_004",
+          "text": "Requesting a deviation left 20 degrees to avoid reported turbulence.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [53, 63],
+          "usage_note": "Pilot requesting a course change to avoid rough air reported by another aircraft.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/rɪˈkwɛstɪŋ ə ˌdiviˈeɪʃən lɛft ˈtwɛnti dɪˈɡriːz tuː əˈvɔɪd rɪˈpɔːrtɪd ˈtɜːrbjələns/" },
+            "british_rp": { "ipa_transcription": "/rɪˈkwɛstɪŋ ə ˌdiːviˈeɪʃən lɛft ˈtwɛnti dɪˈɡriːz tuː əˈvɔɪd rɪˈpɔːtɪd ˈtɜːbjʊləns/" },
+            "british_estuary": { "ipa_transcription": "/rɪˈkwɛstɪŋ ə ˌdiːviˈeɪʃən lɛfʔ ˈtwɛni dɪˈɡriːz tə əˈvɔɪd rɪˈpɔːtɪd ˈtɜːbjʊləns/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "aviation_mayday",
+      "word": "mayday",
+      "part_of_speech": "noun / interjection",
+      "definition": "The international emergency signal used in aviation, repeated three times (mayday mayday mayday).",
+      "difficulty": "advanced",
+      "tags": ["emergency", "safety", "critical"],
+      "pronunciation_alert": {
+        "note": "Mayday is pronounced the same in all accents — /ˈmeɪdeɪ/ — but the urgency and delivery differ.",
+        "american_ga": "Spoken with clear, measured urgency",
+        "british_rp": "Spoken with calm but urgent precision"
+      },
+      "statements": [
+        {
+          "statement_id": "aviation_mayday_001",
+          "text": "Mayday mayday mayday — this is Alpha Bravo Charlie 123 — engine failure.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [0, 6],
+          "usage_note": "The word 'mayday' must be said three times to confirm it is a genuine emergency, not a radio test.",
+          "cultural_note": "Mayday comes from the French 'm'aidez' (help me). It was adopted in 1923 by Frederick Mockford, a senior radio officer at Croydon Airport in London.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈmeɪdeɪ ˈmeɪdeɪ ˈmeɪdeɪ ðɪs ɪz ˈælfə ˈbrɑːvo ˈbrɑːvo ˈtʃɑːli wʌn ˈtwɛnti θriː ˈɛnʤɪn ˈfeɪljər/" },
+            "british_rp": { "ipa_transcription": "/ˈmeɪdeɪ ˈmeɪdeɪ ˈmeɪdeɪ ðɪs ɪz ˈælfə ˈbrɑːvəʊ ˈbrɑːvəʊ ˈtʃɑːli wʌn ˈtwɛnti θriː ˈɛnʤɪn ˈfeɪljə/" },
+            "british_estuary": { "ipa_transcription": "/ˈmeɪdeɪ ˈmeɪdeɪ ˈmeɪdeɪ ðɪs ɪz ˈælfə ˈbrɑːvəʊ ˈbrɑːvəʊ ˈtʃɑːli wʌn ˈtwɛni θriː ˈɛnʤɪn ˈfeɪljə/" }
+          }
+        },
+        {
+          "statement_id": "aviation_mayday_002",
+          "text": "We're declaring an emergency — one engine is shutting down. Mayday.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [52, 58],
+          "usage_note": "'Declaring an emergency' is the formal phrase pilots use with ATC before stating the problem.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wɪr dɪˈklɛrɪŋ æn iˈmɜːrʤənsi wʌn ˈɛnʤɪn ɪz ˈʃʌtɪŋ daʊn ˈmeɪdeɪ/" },
+            "british_rp": { "ipa_transcription": "/wɪə dɪˈklɛərɪŋ æn iˈmɜːʤənsi wʌn ˈɛnʤɪn ɪz ˈʃʌtɪŋ daʊn ˈmeɪdeɪ/" },
+            "british_estuary": { "ipa_transcription": "/wɪə dɪˈklɛərɪŋ æn iˈmɜːʤənsi wʌn ˈɛnʤɪn ɪz ˈʃʌʔɪŋ daʊn ˈmeɪdeɪ/" }
+          }
+        },
+        {
+          "statement_id": "aviation_mayday_003",
+          "text": "ATC acknowledges mayday — squawk 7700. Emergency services are on standby.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [21, 27],
+          "usage_note": "'Squawk 7700' — the transponder code for a general emergency. ATC uses this to track the aircraft.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/eɪ tiː siː ækˈnɑlɪʤɪz ˈmeɪdeɪ skwɔːk ˈsɛvən ˈsɛvən ˈoʊ ˈoʊ ˈzɪroʊ iˈmɜːrʤənsi ˈsɜːrvɪsɪz ɑːr ɒn ˈstændbaɪ/" },
+            "british_rp": { "ipa_transcription": "/eɪ tiː siː ækˈnɒlɪʤɪz ˈmeɪdeɪ skwɔːk ˈsɛvən ˈsɛvən ˈəʊ ˈəʊ ˈzɪərəʊ iˈmɜːʤənsi ˈsɜːvɪsɪz ɑː ɒn ˈstændbaɪ/" },
+            "british_estuary": { "ipa_transcription": "/eɪ tiː siː ækˈnɒlɪʤɪz ˈmeɪdeɪ skwɔːk ˈsɛvən ˈsɛvən ˈəʊ ˈəʊ ˈzɪərəʊ iˈmɜːʤənsi ˈsɜːvɪsɪz ə ɒn ˈstændbaɪ/" }
+          }
+        },
+        {
+          "statement_id": "aviation_mayday_004",
+          "text": "Passenger cabin, this is your captain — we have a mayday situation but remain calm.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [46, 52],
+          "usage_note": "Captain's announcement to passengers during an emergency — balancing honesty with reassurance.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ˈpæsɪnʤər ˈkæbɪn ðɪs ɪz jɔr ˈkæptɪn wiː hæv ə ˈmeɪdeɪ ˌsɪʧuˈeɪʃən bʌt rɪˈmeɪn kɑm/" },
+            "british_rp": { "ipa_transcription": "/ˈpæsɪnʤə ˈkæbɪn ðɪs ɪz jɔː ˈkæptɪn wiː hæv ə ˈmeɪdeɪ ˌsɪʧuˈeɪʃən bʌt rɪˈmeɪn kɑːm/" },
+            "british_estuary": { "ipa_transcription": "/ˈpæsɪnʤə ˈkæbɪn ðɪs ɪz jɔː ˈkæptɪn wiː æv ə ˈmeɪdeɪ ˌsɪʧuˈeɪʃən bʌʔ rɪˈmeɪn kɑːm/" }
+          }
+        }
+      ]
+    }
+  ]
+}

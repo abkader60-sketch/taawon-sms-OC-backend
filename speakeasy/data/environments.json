@@ -1,0 +1,33 @@
+{
+  "environments": [
+    {
+      "id": "restaurant",
+      "name": "At a Restaurant",
+      "icon": "utensils",
+      "color": "#FF6B6B",
+      "file": "data/env_restaurant.json",
+      "description": "Essential vocabulary and phrases for dining out"
+    },
+    {
+      "id": "taxi_transport",
+      "name": "In a Taxi or Rideshare",
+      "icon": "taxi",
+      "color": "#4ECDC4",
+      "file": "data/env_taxi_transport.json",
+      "description": "Key phrases for taking taxis and rideshares"
+    },
+    {
+      "id": "aviation",
+      "name": "Aviation & Air Travel",
+      "icon": "airport",
+      "color": "#3498DB",
+      "file": "data/env_aviation.json",
+      "description": "Pilot, crew, and ATC communication phrases"
+    }
+  ],
+  "accent_options": [
+    { "id": "american_ga", "label": "American English", "flag": "US" },
+    { "id": "british_rp", "label": "British English (Standard)", "flag": "GB" },
+    { "id": "british_estuary", "label": "British English (Everyday)", "flag": "GB" }
+  ]
+}

@@ -66,6 +66,7 @@ from fastapi import (Cookie, Depends, FastAPI, File, Form, HTTPException, Path a
                      Request, Response, UploadFile)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from pydantic import BaseModel
@@ -121,6 +122,11 @@ DEFAULT_SEED_PASSWORD = "ChangeMe123!"
 #  App setup
 # ============================================================
 app = FastAPI(title="Ta'awon P3 SMS API", version="0.9.0")
+
+# Mount SpeakEasy static app at /speakeasy
+SPEAKEASY_DIR = PROJECT_ROOT / "speakeasy"
+if SPEAKEASY_DIR.is_dir():
+    app.mount("/speakeasy", StaticFiles(directory=str(SPEAKEASY_DIR), html=True), name="speakeasy")
 
 app.add_middleware(
     CORSMiddleware,

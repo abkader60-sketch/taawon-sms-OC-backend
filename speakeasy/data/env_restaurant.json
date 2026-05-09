@@ -1,0 +1,286 @@
+﻿{
+  "environment_id": "restaurant",
+  "environment_name": "At a Restaurant",
+  "environment_icon": "restaurant",
+  "difficulty": "beginner",
+  "description": "Essential vocabulary and phrases for dining out, from making a reservation to paying the bill.",
+  "regional_notes": {
+    "vocabulary_differences": {
+      "bill": { "american": "check", "british": "bill" },
+      "main_course": { "american": "entree", "british": "main course" },
+      "appetizer": { "american": "appetizer", "british": "starter" },
+      "server": { "american": "server / waiter", "british": "waiter / waitress" },
+      "to_go": { "american": "to go / takeout", "british": "takeaway" }
+    }
+  },
+  "keywords": [
+    {
+      "keyword_id": "restaurant_order",
+      "word": "order",
+      "part_of_speech": "verb",
+      "definition": "To ask for food or drink in a restaurant.",
+      "difficulty": "beginner",
+      "tags": ["food", "service", "requests"],
+      "statements": [
+        {
+          "statement_id": "restaurant_order_001",
+          "text": "I'd like to order the grilled chicken, please.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [10, 15],
+          "usage_note": "Polite, standard ordering phrase.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪd laɪk tə ˈɔːrdər ðə ɡrɪld ˈtʃɪkɪn pleɪz/" },
+            "british_rp": { "ipa_transcription": "/aɪd laɪk tə ˈɔːdə ðə ɡrɪld ˈtʃɪkɪn pliːz/" },
+            "british_estuary": { "ipa_transcription": "/aɪd laɪk tə ˈɔːdə ðə ɡrɪʊd ˈtʃɪkɪn pliːz/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_order_002",
+          "text": "Can we order now? We've been waiting for a while.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [7, 12],
+          "usage_note": "Used to get the waiter's attention politely.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kæn wiː ˈɔːrdər naʊ wiːv bɪn ˈweɪtɪŋ fər ə waɪl/" },
+            "british_rp": { "ipa_transcription": "/kæn wiː ˈɔːdə naʊ wiːv bɪn ˈweɪtɪŋ fər ə waɪl/" },
+            "british_estuary": { "ipa_transcription": "/kæn wiː ˈɔːdə naʊ wiːv bɪn ˈweɪʔɪŋ fər ə waɪl/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_order_003",
+          "text": "I'll have the same as her, please.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": null,
+          "usage_note": "Natural shortcut when ordering.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪl hæv ðə seɪm æz hɜːr pleɪz/" },
+            "british_rp": { "ipa_transcription": "/aɪl hæv ðə seɪm æz hɜː pliːz/" },
+            "british_estuary": { "ipa_transcription": "/aɪl æv ðə seɪm æz hɜː pliːz/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_order_004",
+          "text": "Could I change my order? I'd prefer the pasta.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [12, 17],
+          "usage_note": "Politely changing a decision.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kʊd aɪ tʃeɪndʒ maɪ ˈɔːrdər aɪd prɪˈfɜːr ðə ˈpɑːstə/" },
+            "british_rp": { "ipa_transcription": "/kʊd aɪ tʃeɪndʒ maɪ ˈɔːdə aɪd prɪˈfɜː ðə ˈpæstə/" },
+            "british_estuary": { "ipa_transcription": "/kʊd aɪ tʃeɪndʒ maɪ ˈɔːdə aɪd prɪˈfɜː ðə ˈpæstə/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_order_005",
+          "text": "We're ready to order, thank you.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [14, 19],
+          "usage_note": "Simple signal to the server that the table has decided.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wɪər ˈrɛdi tə ˈɔːrdər θæŋk juː/" },
+            "british_rp": { "ipa_transcription": "/wiː ˈrɛdi tə ˈɔːdə θæŋk juː/" },
+            "british_estuary": { "ipa_transcription": "/wiː ˈrɛdi tə ˈɔːdə θæŋk juː/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "restaurant_reserve",
+      "word": "reserve",
+      "part_of_speech": "verb",
+      "definition": "To book a table in advance at a restaurant.",
+      "difficulty": "beginner",
+      "tags": ["booking", "planning", "phone"],
+      "statements": [
+        {
+          "statement_id": "restaurant_reserve_001",
+          "text": "I'd like to reserve a table for four at seven o'clock.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [14, 21],
+          "usage_note": "The standard phone booking phrase.",
+          "regional_variant_note": "American alternative: 'I'd like to make a reservation for four at seven.'",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪd laɪk tə rɪˈzɜːrv ə ˈteɪbl fər fɔːr æt ˈsɛvən əˈklɒk/" },
+            "british_rp": { "ipa_transcription": "/aɪd laɪk tə rɪˈzɜːv ə ˈteɪbl fə fɔː æt ˈsɛvən əˈklɒk/" },
+            "british_estuary": { "ipa_transcription": "/aɪd laɪk tə rɪˈzɜːv ə ˈteɪbl fə fɔː æʔ ˈsɛvən əˈklɒk/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_reserve_002",
+          "text": "Do you have a reservation under the name Smith?",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [13, 24],
+          "usage_note": "What to say when you arrive and check in.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/duː juː hæv ə ˌrɛzərˈveɪʃən ˈʌndər ðə neɪm smɪθ/" },
+            "british_rp": { "ipa_transcription": "/duː juː hæv ə ˌrɛzəˈveɪʃən ˈʌndə ðə neɪm smɪθ/" },
+            "british_estuary": { "ipa_transcription": "/duː juː æv ə ˌrɛzəˈveɪʃən ˈʌndə ðə neɪm smɪθ/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_reserve_003",
+          "text": "I'm afraid we don't take reservations — it's walk-in only.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [26, 38],
+          "usage_note": "What a restaurant might say back to you.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪm əˈfreɪd wiː doʊnt teɪk ˌrɛzərˈveɪʃənz ɪts wɔːk ɪn ˈoʊnli/" },
+            "british_rp": { "ipa_transcription": "/aɪm əˈfreɪd wiː dəʊnt teɪk ˌrɛzəˈveɪʃənz ɪts wɔːk ɪn ˈəʊnli/" },
+            "british_estuary": { "ipa_transcription": "/aɪm əˈfreɪd wiː dəʊnt teɪk ˌrɛzəˈveɪʃənz ɪts wɔːk ɪn ˈəʊnli/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_reserve_004",
+          "text": "I'd like to cancel my reservation, please.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [21, 32],
+          "usage_note": "Cancelling in advance is considered polite.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪd laɪk tə ˈkænsəl maɪ ˌrɛzərˈveɪʃən pleɪz/" },
+            "british_rp": { "ipa_transcription": "/aɪd laɪk tə ˈkænsəl maɪ ˌrɛzəˈveɪʃən pliːz/" },
+            "british_estuary": { "ipa_transcription": "/aɪd laɪk tə ˈkænsəl maɪ ˌrɛzəˈveɪʃən pliːz/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "restaurant_recommend",
+      "word": "recommend",
+      "part_of_speech": "verb",
+      "definition": "To suggest something as being good or suitable.",
+      "difficulty": "beginner",
+      "tags": ["advice", "food", "conversation"],
+      "statements": [
+        {
+          "statement_id": "restaurant_recommend_001",
+          "text": "What do you recommend from the menu?",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [12, 21],
+          "usage_note": "Open question to the waiter.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/wʌt duː juː ˌrɛkəˈmɛnd frəm ðə ˈmɛnjuː/" },
+            "british_rp": { "ipa_transcription": "/wɒt duː juː ˌrɛkəˈmɛnd frəm ðə ˈmɛnjuː/" },
+            "british_estuary": { "ipa_transcription": "/wɒʔ duː juː ˌrɛkəˈmɛnd frəm ðə ˈmɛnjuː/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_recommend_002",
+          "text": "I'd highly recommend the fish — it's the chef's special today.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [9, 18],
+          "usage_note": "What the waiter says back.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪd ˈhaɪli ˌrɛkəˈmɛnd ðə fɪʃ ɪts ðə ʃɛfs ˈspɛʃəl təˈdeɪ/" },
+            "british_rp": { "ipa_transcription": "/aɪd ˈhaɪli ˌrɛkəˈmɛnd ðə fɪʃ ɪts ðə ʃɛfs ˈspɛʃəl təˈdeɪ/" },
+            "british_estuary": { "ipa_transcription": "/aɪd ˈhaɪli ˌrɛkəˈmɛnd ðə fɪʃ ɪʔs ðə ʃɛfs ˈspɛʃəl təˈdeɪ/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_recommend_003",
+          "text": "Can you recommend something without nuts? I have an allergy.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [7, 16],
+          "usage_note": "Combines 'recommend' with an allergy disclosure.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kæn juː ˌrɛkəˈmɛnd ˈsʌmθɪŋ wɪˈðaʊt nʌts aɪ hæv æn ˈælərdʒi/" },
+            "british_rp": { "ipa_transcription": "/kæn juː ˌrɛkəˈmɛnd ˈsʌmθɪŋ wɪˈðaʊt nʌts aɪ hæv ən ˈælərdʒi/" },
+            "british_estuary": { "ipa_transcription": "/kæn juː ˌrɛkəˈmɛnd ˈsʌmfɪŋ wɪˈðaʊt nʌts aɪ æv ən ˈælərdʒi/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_recommend_004",
+          "text": "This place comes highly recommended — the pasta is excellent.",
+          "difficulty": "advanced",
+          "keyword_highlight_index": [20, 31],
+          "usage_note": "Passive voice of recommend.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/ðɪs pleɪs kʌmz ˈhaɪli ˌrɛkəˈmɛndɪd ðə ˈpɑːstə ɪz ˈɛksələnt/" },
+            "british_rp": { "ipa_transcription": "/ðɪs pleɪs kʌmz ˈhaɪli ˌrɛkəˈmɛndɪd ðə ˈpæstə ɪz ˈɛksələnt/" },
+            "british_estuary": { "ipa_transcription": "/ðɪs pleɪs kʌmz ˈhaɪli ˌrɛkəˈmɛndɪd ðə ˈpæstə ɪz ˈɛksələnt/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "restaurant_bill",
+      "word": "bill",
+      "part_of_speech": "noun",
+      "definition": "The written statement of how much you owe for your meal.",
+      "difficulty": "beginner",
+      "tags": ["payment", "dining", "regional"],
+      "statements": [
+        {
+          "statement_id": "restaurant_bill_001",
+          "text": "Could we have the bill, please?",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [16, 20],
+          "usage_note": "Standard British request for the check.",
+          "regional_variant_note": "US version: 'Could we have the check, please?'",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kʊd wiː hæv ðə tʃɛk pleɪz/" },
+            "british_rp": { "ipa_transcription": "/kʊd wiː hæv ðə bɪl pliːz/" },
+            "british_estuary": { "ipa_transcription": "/kʊd wiː æv ðə bɪl pliːz/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_bill_002",
+          "text": "Can we split the bill? We'd like to pay separately.",
+          "difficulty": "beginner",
+          "keyword_highlight_index": [14, 18],
+          "usage_note": "'Split the bill' means each person pays their share.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/kæn wiː splɪt ðə tʃɛk wiːd laɪk tə peɪ ˈsɛprətli/" },
+            "british_rp": { "ipa_transcription": "/kæn wiː splɪt ðə bɪl wiːd laɪk tə peɪ ˈsɛprətli/" },
+            "british_estuary": { "ipa_transcription": "/kæn wiː splɪt ðə bɪl wiːd laɪk tə peɪ ˈsɛprətli/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_bill_003",
+          "text": "I think there's a mistake on the bill — I didn't order the soup.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [30, 34],
+          "usage_note": "How to politely dispute a charge.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪ θɪŋk ðɛrz ə mɪˈsteɪk ɒn ðə tʃɛk aɪ ˈdɪdnt ˈɔːrdər ðə suːp/" },
+            "british_rp": { "ipa_transcription": "/aɪ θɪŋk ðɛəz ə mɪˈsteɪk ɒn ðə bɪl aɪ ˈdɪdnt ˈɔːdə ðə suːp/" },
+            "british_estuary": { "ipa_transcription": "/aɪ fɪŋk ðɛəz ə mɪˈsteɪk ɒn ðə bɪl aɪ ˈdɪdnt ˈɔːdə ðə suːp/" }
+          }
+        }
+      ]
+    },
+    {
+      "keyword_id": "restaurant_allergic",
+      "word": "allergic",
+      "part_of_speech": "adjective",
+      "definition": "Having a medical reaction to a particular food or substance.",
+      "difficulty": "intermediate",
+      "tags": ["health", "safety", "dietary"],
+      "statements": [
+        {
+          "statement_id": "restaurant_allergic_001",
+          "text": "I'm allergic to shellfish — is there any in this dish?",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [4, 12],
+          "usage_note": "Critical safety phrase.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/aɪm əˈlɜːrdʒɪk tə ˈʃɛlfɪʃ ɪz ðɛr ˈɛni ɪn ðɪs dɪʃ/" },
+            "british_rp": { "ipa_transcription": "/aɪm əˈlɜːdʒɪk tə ˈʃɛlfɪʃ ɪz ðɛə ˈɛni ɪn ðɪs dɪʃ/" },
+            "british_estuary": { "ipa_transcription": "/aɪm əˈlɜːdʒɪk tə ˈʃɛlfɪʃ ɪz ðɛə ˈɛni ɪn ðɪs dɪʃ/" }
+          }
+        },
+        {
+          "statement_id": "restaurant_allergic_002",
+          "text": "Please let the kitchen know — I have a severe nut allergy.",
+          "difficulty": "intermediate",
+          "keyword_highlight_index": [46, 53],
+          "usage_note": "Emphasises urgency.",
+          "accent_variants": {
+            "american_ga": { "ipa_transcription": "/pliːz lɛt ðə ˈkɪtʃɪn noʊ aɪ hæv ə sɪˈvɪər nʌt ˈælərdʒi/" },
+            "british_rp": { "ipa_transcription": "/pliːz lɛt ðə ˈkɪtʃɪn nəʊ aɪ hæv ə sɪˈvɪə nʌt ˈælərdʒi/" },
+            "british_estuary": { "ipa_transcription": "/pliːz lɛt ðə ˈkɪtʃɪn nəʊ aɪ æv ə sɪˈvɪə nʌt ˈælərdʒi/" }
+          }
+        }
+      ]
+    }
+  ]
+}
