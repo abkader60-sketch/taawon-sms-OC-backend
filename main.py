@@ -397,11 +397,12 @@ INSERT INTO Lookup_Tables (name, description) VALUES
     ('subcontractors', 'Subcontractor name dropdown values')
 ON CONFLICT (name) DO NOTHING;
 
--- Seed companies from the original Submitter_Organizations Group 1
+-- Seed companies from the original Submitter_Organizations (Group 1 + Group 2 subcontractor)
 WITH co AS (SELECT table_id FROM Lookup_Tables WHERE name = 'companies')
 INSERT INTO Lookup_Values (table_id, value, label, display_order, is_active)
 SELECT co.table_id, org, org, ROW_NUMBER() OVER (), TRUE
-FROM (VALUES ('SEVEN'), ('ELLISDON'), ('SBG'), ('AECOM'), ('ATKINS')) AS v(org)
+FROM (VALUES ('SEVEN'), ('ELLISDON'), ('SBG'), ('AECOM'), ('ATKINS'),
+             ('Subcontractor (other)')) AS v(org)
 CROSS JOIN co
 ON CONFLICT (table_id, value) DO NOTHING;
 
