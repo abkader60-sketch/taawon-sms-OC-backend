@@ -67,6 +67,7 @@ from fastapi import (Cookie, Depends, FastAPI, File, Form, HTTPException, Path a
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+import boto3
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from pydantic import BaseModel
@@ -106,6 +107,31 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 ALLOWED_MIME_PREFIXES = ("image/",)
 ALLOWED_MIME_EXACT = {"application/pdf"}
+
+# MinIO / S3-compatible storage (Railway MinIO add-on)
+MINIO_ENDPOINT   = os.getenv("MINIO_ENDPOINT", "")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ROOT_USER", "")
+MINIO_SECRET_KEY = os.getenv("MINIO_ROOT_PASSWORD", "")
+MINIO_BUCKET     = os.getenv("MINIO_BUCKET", "attachments")
+USE_S3 = bool(MINIO_ENDPOINT)
+
+if USE_S3:
+    try:
+        s3_client = boto3.client(
+            "s3",
+            endpoint_url=f"http://{MINIO_ENDPOINT}",
+            aws_access_key_id=MINIO_ACCESS_KEY,
+            aws_secret_access_key=MINIO_SECRET_KEY,
+            region_name="us-east-1",
+        )
+        s3_client.create_bucket(Bucket=MINIO_BUCKET)
+        print(f"MinIO/S3 bucket '{MINIO_BUCKET}' ready at {MINIO_ENDPOINT}")
+    except Exception as exc:
+        print(f"WARNING: MinIO/S3 init failed ({exc}). Falling back to local filesystem.", file=sys.stderr)
+        s3_client = None
+        USE_S3 = False
+else:
+    s3_client = None
 
 # Session config
 SESSION_COOKIE_NAME = "sms_session"
@@ -1913,15 +1939,24 @@ async def _save_upload(upload, app_id, attachment_type):
     contents = await upload.read()
     if len(contents) > MAX_UPLOAD_BYTES:
         raise HTTPException(413, f"File '{upload.filename}' exceeds {MAX_UPLOAD_BYTES // (1024*1024)}MB limit")
-    app_dir = UPLOADS_DIR / f"app_{app_id}"
-    app_dir.mkdir(exist_ok=True)
     original_name = Path(upload.filename or "file").name
     ext = Path(original_name).suffix.lower()
     stored_name = f"{attachment_type}_{uuid.uuid4().hex[:12]}{ext}"
-    dest_path = app_dir / stored_name
-    with open(dest_path, "wb") as f:
-        f.write(contents)
-    rel_path = dest_path.relative_to(UPLOADS_DIR).as_posix()
+    rel_path = f"app_{app_id}/{stored_name}"
+
+    if USE_S3 and s3_client:
+        s3_client.put_object(
+            Bucket=MINIO_BUCKET,
+            Key=rel_path,
+            Body=contents,
+            ContentType=upload.content_type or "application/octet-stream",
+        )
+    else:
+        dest_path = UPLOADS_DIR / rel_path
+        dest_path.parent.mkdir(exist_ok=True)
+        with open(dest_path, "wb") as f:
+            f.write(contents)
+
     return {
         "file_path": rel_path,
         "original_filename": original_name,
@@ -2246,7 +2281,6 @@ async def download_attachment(
             perms = await fetch_user_permissions(conn, p.principal_id)
             allowed = "view_all_applications" in perms
             if not allowed:
-                # Owner check
                 owner = await conn.fetchrow(
                     "SELECT submitted_by_user_id FROM Site_Access_ID WHERE application_id = $1",
                     application_id,
@@ -2271,7 +2305,22 @@ async def download_attachment(
         await conn.close()
     if not row:
         raise HTTPException(404, "Attachment not found")
-    full_path = (UPLOADS_DIR / row["file_path"]).resolve()
+
+    file_path = row["file_path"]
+    media_type = row["mime_type"] or "application/octet-stream"
+    filename = row["original_filename"]
+    disposition = f'inline; filename="{filename}"' if preview else f'attachment; filename="{filename}"'
+
+    if USE_S3 and s3_client:
+        try:
+            obj = s3_client.get_object(Bucket=MINIO_BUCKET, Key=file_path)
+            content = obj["Body"].read()
+        except Exception:
+            raise HTTPException(410, "File missing on storage")
+        return Response(content=content, media_type=media_type,
+                        headers={"Content-Disposition": disposition})
+
+    full_path = (UPLOADS_DIR / file_path).resolve()
     try:
         full_path.relative_to(UPLOADS_DIR.resolve())
     except ValueError:
@@ -2281,13 +2330,13 @@ async def download_attachment(
     if preview:
         return FileResponse(
             full_path,
-            media_type=row["mime_type"] or "application/octet-stream",
-            headers={"Content-Disposition": f'inline; filename="{row["original_filename"]}"'},
+            media_type=media_type,
+            headers={"Content-Disposition": disposition},
         )
     return FileResponse(
         full_path,
-        media_type=row["mime_type"] or "application/octet-stream",
-        filename=row["original_filename"],
+        media_type=media_type,
+        filename=filename,
     )
 
 
