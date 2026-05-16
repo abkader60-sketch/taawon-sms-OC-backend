@@ -67,7 +67,6 @@ from fastapi import (Cookie, Depends, FastAPI, File, Form, HTTPException, Path a
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-import boto3
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from pydantic import BaseModel
@@ -116,6 +115,7 @@ MINIO_BUCKET     = os.getenv("MINIO_BUCKET", "attachments")
 USE_S3 = bool(MINIO_ENDPOINT)
 
 if USE_S3:
+    import boto3
     try:
         s3_client = boto3.client(
             "s3",
