@@ -9,7 +9,7 @@
         - Production: set content to the absolute URL of your API
           (e.g., content="https://taawon-sms-api.up.railway.app").
     -->
-    <meta name="sms-api-base" content="">
+    <meta name="sms-api-base" content="https://securitysms-production.up.railway.app">
     <title>Ta'awon P3 SMS</title>
     <style>
         body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; height: 100vh; overflow: hidden; }
@@ -131,8 +131,17 @@
         .detail-grid dd { margin: 0; color: #222; }
         .detail-grid input, .detail-grid select { padding: 6px 8px; font-size: 13px; }
         .section-heading { font-weight: 600; color: #00a651; font-size: 14px; margin: 20px 0 10px 0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
-        .attachment-link { display: inline-block; padding: 6px 12px; background: #e3f2fd; color: #1565c0; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600; margin: 4px 4px 4px 0; }
+        .attachment-link { display: inline-block; padding: 6px 12px; background: #e3f2fd; color: #1565c0; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600; margin: 4px 4px 4px 0; cursor: pointer; }
         .attachment-link:hover { background: #bbdefb; }
+        .attachment-preview-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .attachment-preview-container { background: #fff; border-radius: 8px; width: 90%; max-width: 900px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
+        .attachment-preview-header { padding: 16px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .attachment-preview-header h3 { margin: 0; color: #00a651; font-size: 16px; }
+        .attachment-preview-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; align-items: center; justify-content: center; background: #f5f5f5; min-height: 300px; }
+        .attachment-preview-body img { max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 4px; }
+        .attachment-preview-body iframe { width: 100%; height: 70vh; border: none; border-radius: 4px; }
+        .attachment-preview-body .download-fallback { text-align: center; padding: 40px; }
+        .attachment-preview-body .download-fallback p { color: #666; margin-bottom: 16px; }
         .reject-reason-textarea { width: 100%; min-height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-size: 14px; resize: vertical; box-sizing: border-box; }
 
         .admin-tabs { display: flex; gap: 4px; border-bottom: 2px solid #f0f0f0; margin-bottom: 20px; flex-wrap: wrap; }
@@ -164,6 +173,11 @@
         .setting-row { display: grid; grid-template-columns: 250px 1fr auto; gap: 12px; align-items: center; padding: 14px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; }
         .setting-row .setting-key { font-weight: 600; color: #1a1c23; font-size: 13px; }
         .setting-row .setting-desc { font-size: 11px; color: #888; margin-top: 2px; font-style: italic; }
+
+        .lookup-add-form { display: flex; gap: 10px; align-items: end; margin-bottom: 16px; padding: 14px; background: #fafafa; border-radius: 4px; }
+        .lookup-add-form .form-group { margin-bottom: 0; }
+        .lookup-add-form input { padding: 8px; }
+        .lookup-add-form button { padding: 9px 18px; }
 
         /* ===== v0.8: Auth overlays ===== */
         .auth-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #00733e 0%, #00a651 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
@@ -382,6 +396,21 @@
                                 </select>
                                 <span class="field-hint">Determines which fields appear below.</span>
                             </div>
+                            <div class="form-group subcontractor-only hidden">
+                                <label>Subcontractor Name *</label>
+                                <select id="subcontractorName">
+                                    <option value="" disabled selected>Select subcontractor</option>
+                                    <option value="NAFFCO">NAFFCO</option>
+                                    <option value="AL HAMRA">AL HAMRA</option>
+                                    <option value="NATIONAL GUARDS">NATIONAL GUARDS</option>
+                                    <option value="NORTH SHIFT SECURITY">NORTH SHIFT SECURITY</option>
+                                    <option value="AL AFAQ SECURITY">AL AFAQ SECURITY</option>
+                                    <option value="CLASSIC SECURITY">CLASSIC SECURITY</option>
+                                    <option value="MODERN SECURITY">MODERN SECURITY</option>
+                                    <option value="AL SAQR SECURITY">AL SAQR SECURITY</option>
+                                </select>
+                                <span class="field-hint">Choose the specific subcontractor company from the list.</span>
+                            </div>
 
                             <div class="form-group">
                                 <label>ID Type *</label>
@@ -392,6 +421,79 @@
                                     <option value="Replacement for a Damaged ID">Replacement for a Damaged ID</option>
                                     <option value="Replacement for a LOST ID">Replacement for a LOST ID</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============== 2. APPLICANT DETAILS ============== -->
+                    <div class="card">
+                        <div class="card-title">2. Applicant Details</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name (as per Iqama / Passport) *</label>
+                                <input type="text" id="fullName" required>
+                            </div>
+
+                            <div class="form-group full-only">
+                                <label>Gender *</label>
+                                <select id="gender">
+                                    <option value="" disabled selected>Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Nationality *</label>
+                                <select id="nationality" required>
+                                    <option value="" disabled selected>Select nationality</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Date of Birth *</label>
+                                <input type="date" id="dateOfBirth" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Iqama / Business Visa / National ID Number *</label>
+                                <input type="text" id="iqamaNumber" required inputmode="numeric" pattern="[0-9]+" title="Numbers only" placeholder="Numbers only">
+                                <span class="field-hint">Numbers only.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Iqama / National ID Expiry Date *</label>
+                                <input type="date" id="iqamaExpiry" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Passport Number</label>
+                                <input type="text" id="passportNo" pattern="[A-Za-z0-9]+" title="Letters and numbers only" placeholder="e.g. A1234567">
+                                <span class="field-hint">Optional. Alphanumeric.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Passport Expiry Date</label>
+                                <input type="date" id="passportExpiry">
+                                <span class="field-hint">Optional.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Blood Type *</label>
+                                <select id="bloodType" required>
+                                    <option value="" disabled selected>Select blood type</option>
+                                    <option value="O+">O+</option> <option value="O-">O-</option>
+                                    <option value="A+">A+</option> <option value="A-">A-</option>
+                                    <option value="B+">B+</option> <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+                                    <option value="Unknown">Unknown</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Employee Number</label>
+                                <input type="text" id="employeeNo" placeholder="Optional">
+                                <span class="field-hint">Optional. Editable by the reviewer.</span>
                             </div>
 
                             <div class="form-group">
@@ -414,109 +516,35 @@
                                 <input type="date" id="safetyInductionDate" required>
                             </div>
 
-                            <!-- Brief-only -->
-                            <div class="form-group brief-only hidden">
+                            <div class="form-group">
                                 <label>Date Joined *</label>
-                                <input type="date" id="dateJoined">
+                                <input type="date" id="dateJoined" required>
                                 <span class="field-hint">Date this person joined the organization.</span>
                             </div>
-                            <div class="form-group brief-only hidden">
-                                <label>Reports To *</label>
+
+                            <div class="form-group">
+                                <label>Reports To</label>
                                 <input type="text" id="reportsTo" placeholder="e.g. Mohammed Al-Harbi (Site Manager)">
-                                <span class="field-hint">Direct supervisor's name and title.</span>
+                                <span class="field-hint">Optional. Direct supervisor's name and title.</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ============== 2. APPLICANT DETAILS ============== -->
+                    <!-- ============== 3. CONTACT INFORMATION ============== -->
                     <div class="card">
-                        <div class="card-title">2. Applicant Details</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Full Name (as per Iqama / Passport) *</label>
-                                <input type="text" id="fullName" required>
-                            </div>
-
-                            <!-- Full-only: Gender -->
-                            <div class="form-group full-only">
-                                <label>Gender *</label>
-                                <select id="gender">
-                                    <option value="" disabled selected>Select gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Nationality *</label>
-                                <select id="nationality" required>
-                                    <option value="" disabled selected>Select nationality</option>
-                                    <!-- Filled by JS from COUNTRY_LIST -->
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Date of Birth *</label>
-                                <input type="date" id="dateOfBirth" required>
-                            </div>
-
-                            <!-- Both forms get Blood Type (kept on brief: safety relevant) -->
-                            <div class="form-group">
-                                <label>Blood Type *</label>
-                                <select id="bloodType" required>
-                                    <option value="" disabled selected>Select blood type</option>
-                                    <option value="O+">O+</option> <option value="O-">O-</option>
-                                    <option value="A+">A+</option> <option value="A-">A-</option>
-                                    <option value="B+">B+</option> <option value="B-">B-</option>
-                                    <option value="AB+">AB+</option> <option value="AB-">AB-</option>
-                                    <option value="Unknown">Unknown</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Employee Number</label>
-                                <input type="text" id="employeeNo" placeholder="Optional">
-                                <span class="field-hint">Optional. Editable by the reviewer.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ============== 3. IDENTIFICATION ============== -->
-                    <div class="card">
-                        <div class="card-title">3. Identification</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Iqama / Business Visa / National ID Number *</label>
-                                <input type="text" id="iqamaNumber" required inputmode="numeric" pattern="[0-9]+" title="Numbers only" placeholder="Numbers only">
-                                <span class="field-hint">Numbers only.</span>
-                            </div>
-
-                            <!-- Full-only: Passport -->
-                            <div class="form-group full-only">
-                                <label>Passport Number *</label>
-                                <input type="text" id="passportNo" pattern="[A-Za-z0-9]+" title="Letters and numbers only" placeholder="e.g. A1234567">
-                                <span class="field-hint">Alphanumeric.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ============== 4. CONTACT INFORMATION ============== -->
-                    <div class="card">
-                        <div class="card-title">4. Contact Information</div>
+                        <div class="card-title">3. Contact Information</div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Mobile Number *</label>
                                 <input type="tel" id="mobileNo" required placeholder="+966 5X XXX XXXX">
 
-                                <!-- Full-only: WhatsApp toggle -->
-                                <div class="checkbox-group full-only">
+                                <div class="checkbox-group">
                                     <input type="checkbox" id="sameAsWhatsapp" checked onchange="handleWhatsAppChange()">
                                     <label for="sameAsWhatsapp">Use this number for WhatsApp</label>
                                 </div>
                             </div>
 
-                            <!-- Full-only: WhatsApp number, conditional -->
-                            <div class="form-group hidden full-only" id="whatsappWrapper">
+                            <div class="form-group hidden" id="whatsappWrapper">
                                 <label>WhatsApp Number *</label>
                                 <input type="tel" id="whatsappNo" placeholder="Enter WhatsApp number">
                             </div>
@@ -528,33 +556,28 @@
                         </div>
                     </div>
 
-                    <!-- ============== 5. EMPLOYMENT & PROFESSION (full-only) ============== -->
+                    <!-- ============== 4. EMPLOYMENT & PROFESSION (full-only) ============== -->
                     <div class="card full-only">
-                        <div class="card-title">5. Employment &amp; Profession</div>
+                        <div class="card-title">4. Employment &amp; Profession</div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Trade / Profession (as in the Iqama) *</label>
                                 <input type="text" id="tradeIqama">
                             </div>
                             <div class="form-group">
+                                <div class="checkbox-group" style="margin-bottom:10px;">
+                                    <input type="checkbox" id="sameTradeAsIqama" onchange="copyTradeFromIqama()">
+                                    <label for="sameTradeAsIqama">Same as above</label>
+                                </div>
                                 <label>Trade / Profession (as in the Project) *</label>
                                 <input type="text" id="tradeProject">
-                            </div>
-                            <div class="form-group full-width">
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="sponsorIsThirdParty" onchange="handleSponsorChange()">
-                                    <label for="sponsorIsThirdParty">
-                                        The sponsor on the Iqama is <strong>not</strong> the supplier or subcontractor (a Legal Agreement attachment is required).
-                                        <br><span class="field-hint">The approver will verify this declaration.</span>
-                                    </label>
-                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ============== 6. ATTACHMENTS ============== -->
+                    <!-- ============== 5. ATTACHMENTS ============== -->
                     <div class="card">
-                        <div class="card-title">6. Attachments</div>
+                        <div class="card-title">5. Attachments</div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>ID Copy *</label>
@@ -562,21 +585,38 @@
                                 <span class="field-hint">Required for all forms.</span>
                             </div>
 
-                            <!-- Full-only attachments -->
-                            <div class="form-group full-only">
-                                <label>Insurance Validity *</label>
-                                <input type="file" id="insuranceUpload" accept="image/*,.pdf">
-                                <span class="field-hint">Required.</span>
+                            <div class="form-group full-only full-width" style="padding:12px;background:#fff5f5;border:1px solid #ffcdd2;border-radius:4px;">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="sponsorIsThirdParty" onchange="handleSponsorChange()">
+                                    <label for="sponsorIsThirdParty" style="color:#c62828;">
+                                        The sponsor on the Iqama is <strong>not</strong> the supplier or subcontractor (a Legal Agreement attachment is required).
+                                        <br><span class="field-hint" style="color:#e57373;">The approver will verify this declaration.</span>
+                                    </label>
+                                </div>
                             </div>
-                            <div class="form-group full-only">
-                                <label>Personal Photo</label>
-                                <input type="file" id="photoUpload" accept="image/*">
-                                <span class="field-hint">Recommended.</span>
-                            </div>
-                            <div class="form-group hidden full-only" id="legalAgreementWrapper">
+
+                            <div class="form-group hidden" id="legalAgreementWrapper" style="margin-top:0;">
                                 <label>Legal Agreement *</label>
                                 <input type="file" id="legalAgreementUpload" accept=".pdf,image/*">
                                 <span class="field-hint">Required because the Iqama sponsor is a third party.</span>
+                            </div>
+
+                            <div class="form-group full-only">
+                                <label>Insurance Validity *</label>
+                                <input type="file" id="insuranceUpload" accept="image/*,.pdf">
+                                <span class="field-hint">Required for full form.</span>
+                            </div>
+
+                            <div class="form-group full-only">
+                                <label>Insurance Expiry Date *</label>
+                                <input type="date" id="insuranceExpiry">
+                                <span class="field-hint">Required for full form.</span>
+                            </div>
+
+                            <div class="form-group full-only">
+                                <label>Personal Photo</label>
+                                <input type="file" id="photoUpload" accept="image/*">
+                                <span class="field-hint">Recommended. Photo size: 4 x 6 cm with white background.</span>
                             </div>
                         </div>
                     </div>
@@ -595,6 +635,7 @@
                         <div class="admin-tab"        id="atab-roles"     onclick="switchAdminTab('roles')">Roles &amp; Permissions</div>
                         <div class="admin-tab"        id="atab-groups"    onclick="switchAdminTab('groups')">Groups</div>
                         <div class="admin-tab"        id="atab-external"  onclick="switchAdminTab('external')">External Submitters</div>
+                        <div class="admin-tab"        id="atab-lookups"   onclick="switchAdminTab('lookups')">Lookup Tables</div>
                         <div class="admin-tab"        id="atab-settings"  onclick="switchAdminTab('settings')">System Settings</div>
                     </div>
 
@@ -651,6 +692,24 @@
                             <div><label>Organization</label><select id="newExtOrgId"></select></div>
                             <div><button class="btn-submit" style="margin-top:0;width:auto;" onclick="createExternalSubmitter()">Create Account</button></div>
                         </div>
+                    </div>
+
+                    <div id="apane-lookups" class="admin-pane hidden">
+                        <h3 style="margin-top:0;color:#1a1c23;font-size:16px;">Lookup Tables</h3>
+                        <p class="card-subtitle" style="margin-top:0;">Manage dropdown values used in the application form. Edit, add, or remove entries — or upload an Excel file for bulk updates.</p>
+                        <div id="lookupTableSelector" style="margin-bottom:20px;display:flex;gap:12px;align-items:end;flex-wrap:wrap;">
+                            <div><label style="font-size:13px;color:#555;font-weight:600;margin-bottom:4px;display:block;">Select lookup table</label>
+                                <select id="lookupTableSelect" onchange="loadLookupTable(this.value)" style="padding:8px;min-width:220px;"></select>
+                            </div>
+                            <div><button class="btn-submit" style="margin-top:0;width:auto;padding:9px 16px;" onclick="openAddLookupValue()">+ Add Entry</button></div>
+                            <div><button class="btn-submit" style="margin-top:0;width:auto;padding:9px 16px;background:#1565c0;" onclick="openImportLookup()">↑ Import Excel</button></div>
+                            <div><button class="btn-submit" style="margin-top:0;width:auto;padding:9px 16px;background:#6a1b9a;" onclick="exportLookupTable()">↓ Export Excel</button></div>
+                        </div>
+                        <div id="lookupTableStatus" class="status-box hidden"></div>
+                        <table>
+                            <thead><tr><th>Value</th><th>Label</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="lookupValuesTableBody"><tr><td colspan="5" style="text-align:center;color:#888;">Select a table to view</td></tr></tbody>
+                        </table>
                     </div>
 
                     <div id="apane-settings" class="admin-pane hidden">
@@ -735,6 +794,8 @@
                 document.getElementById('view-id-form').classList.remove('hidden');
                 document.getElementById('pageTitle').innerText = 'Application for Site Access ID';
                 document.getElementById('pageSubtitle').innerText = 'Choose your Company / Employer first - the form adapts to that selection.';
+                loadFormLookups();
+                loadOrganizations();
             } else if (viewName === 'admin') {
                 document.getElementById('nav-admin').classList.add('active');
                 document.getElementById('view-admin').classList.remove('hidden');
@@ -918,6 +979,7 @@
 
             await loadPermissionCatalog();
             await loadOrganizations();
+            await loadFormLookups();
             await loadWorkflowMode();
             // Pre-load staff list (for displaying acted_by names etc.) when staff
             if (currentUser.principal_type === 'staff') {
@@ -995,7 +1057,54 @@
                 const r = await api('/api/v1/organizations');
                 if (!r.ok) return;
                 allOrganizations = (await r.json()).organizations || [];
+                // Refresh subcontractor dropdown now that we have group_2 orgs
+                populateSubcontractorDropdown();
             } catch (e) { console.error(e); }
+        }
+
+        let lookupCompanies = [];
+        let lookupSubcontractors = [];
+
+         async function loadFormLookups() {
+            try {
+                const r = await api('/api/v1/lookups');
+                if (!r.ok) return;
+                const data = await r.json();
+                (data.lookups || []).forEach(lt => {
+                    if (lt.name === 'companies') lookupCompanies = lt.values || [];
+                    if (lt.name === 'subcontractors') lookupSubcontractors = lt.values || [];
+                });
+                // Populate company dropdown from lookup
+                const companySel = document.getElementById('companyName');
+                if (companySel) {
+                    companySel.innerHTML = '<option value="" disabled selected>Select company</option>';
+                    lookupCompanies.forEach(c => {
+                        companySel.innerHTML += `<option value="${escapeHtml(c.value)}">${escapeHtml(c.label || c.value)}</option>`;
+                    });
+                }
+                // Populate subcontractor dropdown: merge lookup table data + group_2 orgs from allOrganizations
+                populateSubcontractorDropdown();
+            } catch (e) { console.error(e); }
+        }
+
+        function populateSubcontractorDropdown() {
+            const subconSel = document.getElementById('subcontractorName');
+            if (!subconSel) return;
+            // Collect unique entries: lookup table values first
+            const seen = new Set();
+            let html = '<option value="" disabled selected>Select subcontractor</option>';
+            (lookupSubcontractors || []).forEach(s => {
+                const v = s.value;
+                if (!seen.has(v)) { seen.add(v); html += `<option value="${escapeHtml(v)}">${escapeHtml(s.label || v)}</option>`; }
+            });
+            // Also add any group_2 orgs from allOrganizations not already listed
+            (allOrganizations || []).forEach(o => {
+                if (o.submitter_group === 'group_2' && !o.organization_name.toLowerCase().includes('subcontractor') && !seen.has(o.organization_name)) {
+                    seen.add(o.organization_name);
+                    html += `<option value="${escapeHtml(o.organization_name)}">${escapeHtml(o.organization_name)}</option>`;
+                }
+            });
+            subconSel.innerHTML = html;
         }
 
         async function loadWorkflowMode() {
@@ -1023,9 +1132,25 @@
         // ==============================================
         function onCompanyChange() {
             const company = document.getElementById('companyName').value;
-            // Subcontractor (any) -> full form. Anything else -> brief form.
-            const variant = (company === 'Subcontractor (other)') ? 'full' : 'brief';
+            // Check both the organizations data AND the raw value as fallback
+            const org = allOrganizations.find(o => o.organization_name === company);
+            const isSubcontractor = (org && org.submitter_group === 'group_2') || company.toLowerCase().includes('subcontractor');
+            const wantsSubcontractorOther = company.toLowerCase().includes('subcontractor');
+            const variant = isSubcontractor ? 'full' : 'brief';
             applyFormVariant(variant);
+            // Show/hide subcontractor dropdown
+            const subconWrapper = document.querySelector('.subcontractor-only');
+            const subconSelect = document.getElementById('subcontractorName');
+            if (subconWrapper) {
+                if (wantsSubcontractorOther) {
+                    subconWrapper.classList.remove('hidden');
+                    subconSelect.required = true;
+                } else {
+                    subconWrapper.classList.add('hidden');
+                    subconSelect.required = false;
+                    subconSelect.value = '';
+                }
+            }
         }
 
         function applyFormVariant(variant) {
@@ -1039,15 +1164,13 @@
                 fullEls.forEach(el => el.classList.add('hidden'));
                 banner.className = 'variant-banner brief';
                 banner.innerHTML = '<strong>Brief form</strong> &middot; This applies to Client / PMC / Main Contractor / LDC personnel. Fewer fields and fewer attachments are required.';
-                // Clear any data the user typed into now-hidden fields, so it doesn't get submitted by mistake
                 clearHiddenFields();
-                // Required attribute management - drop required from full-only fields
                 setRequiredAttribute('.full-only', false);
                 setRequiredAttribute('.brief-only', true);
-                // Brief form: ID Copy is the only required upload
                 document.getElementById('idCopyUpload').required = true;
                 document.getElementById('insuranceUpload').required = false;
                 document.getElementById('legalAgreementUpload').required = false;
+                handleWhatsAppChange();
             } else if (variant === 'full') {
                 fullEls.forEach(el => el.classList.remove('hidden'));
                 briefEls.forEach(el => el.classList.add('hidden'));
@@ -1056,13 +1179,11 @@
                 clearHiddenFields();
                 setRequiredAttribute('.full-only', true);
                 setRequiredAttribute('.brief-only', false);
-                // Full form: ID Copy + Insurance required; legal agreement only if 3rd-party sponsor
                 document.getElementById('idCopyUpload').required = true;
                 document.getElementById('insuranceUpload').required = true;
-                handleSponsorChange();   // re-evaluate legal-agreement requirement
-                handleWhatsAppChange();  // re-evaluate whatsapp number requirement
+                handleSponsorChange();
+                handleWhatsAppChange();
             } else {
-                // No company chosen yet: keep all variant-specific fields hidden, banner empty
                 briefEls.forEach(el => el.classList.add('hidden'));
                 fullEls.forEach(el => el.classList.add('hidden'));
                 banner.className = 'variant-banner empty';
@@ -1088,7 +1209,7 @@
 
         function clearHiddenFields() {
             // Clear values in any field that is currently hidden, so they don't sneak into submissions.
-            document.querySelectorAll('.brief-only.hidden input, .brief-only.hidden select, .full-only.hidden input, .full-only.hidden select').forEach(inp => {
+            document.querySelectorAll('.brief-only.hidden input, .brief-only.hidden select, .full-only.hidden input, .full-only.hidden select, .subcontractor-only.hidden input, .subcontractor-only.hidden select').forEach(inp => {
                 if (inp.type === 'checkbox') inp.checked = false;
                 else if (inp.type === 'file') inp.value = '';
                 else inp.value = '';
@@ -1096,8 +1217,6 @@
         }
 
         function handleSponsorChange() {
-            // Only meaningful in full-form context
-            if (formVariant !== 'full') return;
             const isThirdParty = document.getElementById('sponsorIsThirdParty').checked;
             const wrapper = document.getElementById('legalAgreementWrapper');
             const upload  = document.getElementById('legalAgreementUpload');
@@ -1106,12 +1225,19 @@
         }
 
         function handleWhatsAppChange() {
-            if (formVariant !== 'full') return;
             const isSame = document.getElementById('sameAsWhatsapp').checked;
             const waWrapper = document.getElementById('whatsappWrapper');
             const waInput   = document.getElementById('whatsappNo');
             if (isSame) { waWrapper.classList.add('hidden'); waInput.required = false; waInput.value = ""; }
             else { waWrapper.classList.remove('hidden'); waInput.required = true; }
+        }
+
+        function copyTradeFromIqama() {
+            const checked = document.getElementById('sameTradeAsIqama').checked;
+            const source = document.getElementById('tradeIqama');
+            const target = document.getElementById('tradeProject');
+            if (checked) { target.value = source.value; target.readOnly = true; }
+            else { target.readOnly = false; }
         }
 
         document.getElementById('idApplicationForm').addEventListener('submit', async function(e) {
@@ -1137,22 +1263,24 @@
             fd.append('gov_id_number',          document.getElementById('iqamaNumber').value.trim());
             fd.append('blood_type',             document.getElementById('bloodType').value);
             fd.append('employee_number',        document.getElementById('employeeNo').value.trim() || 'N/A');
-            // submitted_by_user_id is now derived from the session cookie on the server.
+            fd.append('subcontractor',          document.getElementById('subcontractorName').value || '');
+            fd.append('date_joined',            document.getElementById('dateJoined').value || '');
+            fd.append('reports_to',             document.getElementById('reportsTo').value.trim() || '');
+            fd.append('iqama_expiry_date',      document.getElementById('iqamaExpiry').value || '');
+            fd.append('passport_expiry_date',   document.getElementById('passportExpiry').value || '');
+
+            const sameAsWa = document.getElementById('sameAsWhatsapp').checked;
+            const mobile = document.getElementById('mobileNo').value.trim();
+            const finalWhatsapp = sameAsWa ? mobile : document.getElementById('whatsappNo').value.trim();
+            fd.append('whatsapp_number',         finalWhatsapp);
 
             if (formVariant === 'full') {
-                const sameAsWa = document.getElementById('sameAsWhatsapp').checked;
-                const mobile = document.getElementById('mobileNo').value.trim();
-                const finalWhatsapp = sameAsWa ? mobile : document.getElementById('whatsappNo').value.trim();
-                fd.append('whatsapp_number',         finalWhatsapp);
                 fd.append('job_title',               document.getElementById('tradeProject').value.trim());
                 fd.append('is_third_party_sponsor',  document.getElementById('sponsorIsThirdParty').checked);
+                fd.append('insurance_expiry_date',   document.getElementById('insuranceExpiry').value || '');
             } else {
-                // brief
-                fd.append('whatsapp_number',         document.getElementById('mobileNo').value.trim());  // reuse mobile
-                fd.append('job_title',               document.getElementById('reportsTo').value.trim() || ''); // brief has no Trade; using reports_to also stored separately
+                fd.append('job_title',               '');
                 fd.append('is_third_party_sponsor',  false);
-                fd.append('date_joined',             document.getElementById('dateJoined').value || '');
-                fd.append('reports_to',              document.getElementById('reportsTo').value.trim());
             }
 
             const idFile    = document.getElementById('idCopyUpload').files[0];
@@ -1483,8 +1611,13 @@
             });
             const sponsorEl = document.getElementById('edit_is_third_party_sponsor');
             if (sponsorEl) payload.is_third_party_sponsor = sponsorEl.checked;
-            const dateEl = document.getElementById('edit_date_joined');
-            if (dateEl) payload.date_joined = dateEl.value || null;
+
+            // Date fields that need special handling
+            const dateFields = ['date_joined', 'iqama_expiry_date', 'passport_expiry_date', 'insurance_expiry_date'];
+            dateFields.forEach(f => {
+                const el = document.getElementById('edit_' + f);
+                if (el) payload[f] = el.value || null;
+            });
             try {
                 const r = await api(`/api/v1/applications/${currentlyViewingAppId}`, {
                     method: 'PUT',
@@ -1511,6 +1644,12 @@
                     const d = value ? (typeof value === 'string' ? value.slice(0,10) : new Date(value).toISOString().slice(0,10)) : '';
                     return `<dt>${label}</dt><dd><input type="date" id="edit_${fieldName}" value="${escapeHtml(d)}"></dd>`;
                 }
+                if (opts.select && opts.choices) {
+                    const options = opts.choices.map(c =>
+                        `<option value="${escapeHtml(c.value)}" ${c.value === value ? 'selected' : ''}>${escapeHtml(c.label || c.value)}</option>`
+                    ).join('');
+                    return `<dt>${label}</dt><dd><select id="edit_${fieldName}"><option value="">-- None --</option>${options}</select></dd>`;
+                }
                 return `<dt>${label}</dt><dd><input type="text" id="edit_${fieldName}" value="${escapeHtml(value || '')}"></dd>`;
             }
             let display;
@@ -1529,7 +1668,7 @@
                 attHtml = data.attachments.map(at => {
                     const sizeKb = at.file_size_bytes ? (at.file_size_bytes / 1024).toFixed(1) + ' KB' : '';
                     const safeName = escapeHtml(at.original_filename || 'file');
-                    return `<a class="attachment-link" href="javascript:void(0)" onclick="downloadAttachment(${a.application_id}, ${at.attachment_id}, '${safeName.replace(/'/g, "\\'")}')">📎 ${escapeHtml(prettyAttachmentType(at.attachment_type))}: ${safeName}${sizeKb ? `<span style="opacity:0.7;font-weight:normal;"> (${sizeKb})</span>` : ''}</a>`;
+                    return `<a class="attachment-link" href="javascript:void(0)" onclick="previewAttachment(${a.application_id}, ${at.attachment_id}, '${safeName.replace(/'/g, "\\'")}', '${at.mime_type || ''}')">📎 ${escapeHtml(prettyAttachmentType(at.attachment_type))}: ${safeName}${sizeKb ? `<span style="opacity:0.7;font-weight:normal;"> (${sizeKb})</span>` : ''}</a>`;
                 }).join('');
             } else { attHtml = `<span class="no-perm-text">No attachments uploaded.</span>`; }
 
@@ -1572,11 +1711,15 @@
                     ${detailField('Job / Trade', 'job_title', a.job_title)}
                     ${detailField('Employee No.', 'employee_number', a.employee_number)}
                     ${detailField('Organization', 'organization', a.organization)}
-                    ${detailField('Subcontractor', 'subcontractor', a.subcontractor)}
+                    ${detailField('Subcontractor', 'subcontractor', a.subcontractor, { select: true, choices: lookupSubcontractors })}
                     ${detailField('Date Joined', 'date_joined', a.date_joined, { date: true })}
                     ${detailField('Reports To', 'reports_to', a.reports_to)}
                     ${detailField('Gov ID Type', 'gov_id_type', a.gov_id_type)}
                     ${detailField('Gov ID Number', 'gov_id_number', a.gov_id_number)}
+                    ${detailField('Iqama Expiry', 'iqama_expiry_date', a.iqama_expiry_date, { date: true })}
+                    ${detailField('Passport Number', 'passport_number', a.passport_number)}
+                    ${detailField('Passport Expiry', 'passport_expiry_date', a.passport_expiry_date, { date: true })}
+                    ${detailField('Insurance Expiry', 'insurance_expiry_date', a.insurance_expiry_date, { date: true })}
                     ${detailField('Blood Type', 'blood_type', a.blood_type)}
                     ${detailField('Mobile', 'mobile_number', a.mobile_number)}
                     ${detailField('WhatsApp', 'whatsapp_number', a.whatsapp_number)}
@@ -1644,12 +1787,13 @@
         // ADMIN PANEL (unchanged from v0.5)
         // ==============================================
         function switchAdminTab(tab) {
-            ['users','roles','groups','external','settings'].forEach(t => {
+            ['users','roles','groups','external','lookups','settings'].forEach(t => {
                 const tabEl = document.getElementById('atab-' + t);
                 const paneEl = document.getElementById('apane-' + t);
                 if (tabEl) tabEl.classList.toggle('active', t === tab);
                 if (paneEl) paneEl.classList.toggle('hidden', t !== tab);
             });
+            if (tab === 'lookups') loadLookupTablesList();
         }
 
         async function loadAdminAll() {
@@ -2104,6 +2248,271 @@
                 await loadWorkflowMode();
             } catch (e) { showAdminMsg(`Error: ${e.message}`, true); }
         }
+
+        // ==============================================
+        // LOOKUP TABLES ADMIN (v0.9)
+        // ==============================================
+        let cachedLookups = [];
+
+        async function loadLookupTablesList() {
+            const sel = document.getElementById('lookupTableSelect');
+            if (!sel) return;
+            try {
+                const r = await api('/api/v1/lookups');
+                if (!r.ok) return;
+                const data = await r.json();
+                cachedLookups = data.lookups || [];
+                sel.innerHTML = '<option value="">— Select a table —</option>';
+                cachedLookups.forEach(lt => {
+                    sel.innerHTML += `<option value="${escapeHtml(lt.name)}">${escapeHtml(lt.name)} — ${escapeHtml(lt.description || '')}</option>`;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadLookupTable(tableName) {
+            const tbody = document.getElementById('lookupValuesTableBody');
+            if (!tableName) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;">Select a table to view</td></tr>'; return; }
+            try {
+                const r = await api(`/api/v1/lookups/${encodeURIComponent(tableName)}`);
+                if (!r.ok) { const e = await r.json().catch(() => ({})); tbody.innerHTML = `<tr><td colspan="5" style="color:red;text-align:center;">${escapeHtml(e.detail || r.statusText)}</td></tr>`; return; }
+                const data = await r.json();
+                tbody.innerHTML = '';
+                if (!data.values || data.values.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;">No entries yet. Click "+ Add Entry" to add one, or upload an Excel file.</td></tr>';
+                    return;
+                }
+                data.values.forEach(v => {
+                    const tr = document.createElement('tr');
+                    if (!v.is_active) tr.classList.add('inactive-row');
+                    tr.innerHTML = `
+                        <td>${escapeHtml(v.value)}</td>
+                        <td>${escapeHtml(v.label || v.value)}</td>
+                        <td style="text-align:center;">${v.display_order}</td>
+                        <td>${v.is_active ? '<span class="badge badge-approved">Active</span>' : '<span class="badge badge-rejected">Inactive</span>'}</td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="openEditLookupValue(${v.value_id})">Edit</button>
+                            <button class="btn-action btn-reject" onclick="deleteLookupValue(${v.value_id})">Delete</button>
+                        </td>`;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) { tbody.innerHTML = `<tr><td colspan="5" style="color:red;text-align:center;">${escapeHtml(e.message)}</td></tr>`; }
+        }
+
+        function showLookupMsg(text, isError) {
+            const div = document.getElementById('lookupTableStatus');
+            div.innerText = text;
+            div.className = 'status-box ' + (isError ? 'error-msg' : 'success-msg');
+            div.classList.remove('hidden');
+            setTimeout(() => div.classList.add('hidden'), 4500);
+        }
+
+        async function openAddLookupValue() {
+            const tableName = document.getElementById('lookupTableSelect').value;
+            if (!tableName) { showLookupMsg('Select a lookup table first.', true); return; }
+            const html = `
+                <div class="modal-backdrop" onclick="if(event.target===this)this.remove()">
+                    <div class="modal" style="max-width:480px;">
+                        <div class="modal-header"><h2>Add Entry — ${escapeHtml(tableName)}</h2><button class="modal-close" onclick="this.closest('.modal-backdrop').remove()">&times;</button></div>
+                        <div class="modal-body">
+                            <div class="form-group"><label>Value *</label><input type="text" id="lvValue" required></div>
+                            <div class="form-group" style="margin-top:12px;"><label>Label (optional, defaults to value)</label><input type="text" id="lvLabel"></div>
+                            <div class="form-group" style="margin-top:12px;"><label>Display Order</label><input type="number" id="lvOrder" value="0"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" onclick="this.closest('.modal-backdrop').remove()">Cancel</button>
+                            <button class="btn-save" onclick="addLookupValue('${escapeHtml(tableName)}')">Add</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modalHost').insertAdjacentHTML('beforeend', html);
+            setTimeout(() => document.getElementById('lvValue').focus(), 100);
+        }
+
+        async function addLookupValue(tableName) {
+            const value = document.getElementById('lvValue').value.trim();
+            if (!value) return;
+            const label = document.getElementById('lvLabel').value.trim() || value;
+            const order = parseInt(document.getElementById('lvOrder').value) || 0;
+            try {
+                const r = await api(`/api/v1/admin/lookups/${encodeURIComponent(tableName)}/values`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ value, label, display_order: order })
+                });
+                if (!r.ok) { const e = await r.json().catch(() => ({})); showLookupMsg(`Failed: ${e.detail || r.statusText}`, true); return; }
+                showLookupMsg(`Entry "${value}" added.`);
+                document.querySelector('#modalHost .modal-backdrop')?.remove();
+                loadLookupTable(tableName);
+            } catch (e) { showLookupMsg(`Error: ${e.message}`, true); }
+        }
+
+        async function openEditLookupValue(valueId) {
+            const tableName = document.getElementById('lookupTableSelect').value;
+            // Find the current value from the cached data
+            const r = await api(`/api/v1/lookups/${encodeURIComponent(tableName)}`);
+            if (!r.ok) return;
+            const data = await r.json();
+            const v = (data.values || []).find(x => x.value_id === valueId);
+            if (!v) return;
+            const html = `
+                <div class="modal-backdrop" onclick="if(event.target===this)this.remove()">
+                    <div class="modal" style="max-width:480px;">
+                        <div class="modal-header"><h2>Edit Entry — ${escapeHtml(tableName)}</h2><button class="modal-close" onclick="this.closest('.modal-backdrop').remove()">&times;</button></div>
+                        <div class="modal-body">
+                            <div class="form-group"><label>Value *</label><input type="text" id="lvValue" value="${escapeHtml(v.value)}" required></div>
+                            <div class="form-group" style="margin-top:12px;"><label>Label</label><input type="text" id="lvLabel" value="${escapeHtml(v.label || '')}"></div>
+                            <div class="form-group" style="margin-top:12px;"><label>Display Order</label><input type="number" id="lvOrder" value="${v.display_order}"></div>
+                            <div class="form-group" style="margin-top:12px;">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="lvActive" ${v.is_active ? 'checked' : ''}>
+                                    <label for="lvActive">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" onclick="this.closest('.modal-backdrop').remove()">Cancel</button>
+                            <button class="btn-save" onclick="updateLookupValue('${escapeHtml(tableName)}', ${valueId})">Save</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modalHost').insertAdjacentHTML('beforeend', html);
+        }
+
+        async function updateLookupValue(tableName, valueId) {
+            const body = {
+                value: document.getElementById('lvValue').value.trim(),
+                label: document.getElementById('lvLabel').value.trim() || null,
+                display_order: parseInt(document.getElementById('lvOrder').value) || 0,
+                is_active: document.getElementById('lvActive').checked,
+            };
+            try {
+                const r = await api(`/api/v1/admin/lookups/${encodeURIComponent(tableName)}/values/${valueId}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) { const e = await r.json().catch(() => ({})); showLookupMsg(`Failed: ${e.detail || r.statusText}`, true); return; }
+                showLookupMsg(`Entry updated.`);
+                document.querySelector('#modalHost .modal-backdrop')?.remove();
+                loadLookupTable(tableName);
+            } catch (e) { showLookupMsg(`Error: ${e.message}`, true); }
+        }
+
+        async function deleteLookupValue(valueId) {
+            if (!confirm('Delete this entry?')) return;
+            const tableName = document.getElementById('lookupTableSelect').value;
+            try {
+                const r = await api(`/api/v1/admin/lookups/${encodeURIComponent(tableName)}/values/${valueId}`, { method: 'DELETE' });
+                if (!r.ok) { const e = await r.json().catch(() => ({})); showLookupMsg(`Failed: ${e.detail || r.statusText}`, true); return; }
+                showLookupMsg('Entry deleted.');
+                loadLookupTable(tableName);
+            } catch (e) { showLookupMsg(`Error: ${e.message}`, true); }
+        }
+
+        async function openImportLookup() {
+            const tableName = document.getElementById('lookupTableSelect').value;
+            if (!tableName) { showLookupMsg('Select a lookup table first.', true); return; }
+            const html = `
+                <div class="modal-backdrop" onclick="if(event.target===this)this.remove()">
+                    <div class="modal" style="max-width:480px;">
+                        <div class="modal-header"><h2>Import Excel — ${escapeHtml(tableName)}</h2><button class="modal-close" onclick="this.closest('.modal-backdrop').remove()">&times;</button></div>
+                        <div class="modal-body">
+                            <p class="card-subtitle" style="margin-top:0;">Upload an Excel file (.xlsx) with columns: <strong>value</strong>, <strong>label</strong> (optional), <strong>display_order</strong> (optional). Existing values are preserved; new rows are added.</p>
+                            <div class="form-group"><label>Excel file</label><input type="file" id="importFile" accept=".xlsx" required></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" onclick="this.closest('.modal-backdrop').remove()">Cancel</button>
+                            <button class="btn-save" onclick="doImportLookup('${escapeHtml(tableName)}')">Upload</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modalHost').insertAdjacentHTML('beforeend', html);
+        }
+
+        async function doImportLookup(tableName) {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files.length) return;
+            const fd = new FormData();
+            fd.append('file', fileInput.files[0]);
+            try {
+                const r = await api(`/api/v1/admin/lookups/${encodeURIComponent(tableName)}/import`, { method: 'POST', body: fd });
+                const data = await r.json();
+                if (!r.ok) { showLookupMsg(`Failed: ${data.detail || r.statusText}`, true); return; }
+                showLookupMsg(`Import complete: ${data.added} added, ${data.skipped} skipped.`);
+                document.querySelector('#modalHost .modal-backdrop')?.remove();
+                loadLookupTable(tableName);
+            } catch (e) { showLookupMsg(`Error: ${e.message}`, true); }
+        }
+
+        async function exportLookupTable() {
+            const tableName = document.getElementById('lookupTableSelect').value;
+            if (!tableName) { showLookupMsg('Select a lookup table first.', true); return; }
+            window.open(`${API_BASE}/api/v1/admin/lookups/${encodeURIComponent(tableName)}/export`, '_blank');
+        }
+
+        // ==============================================
+        // ATTACHMENT PREVIEW (v0.9)
+        // ==============================================
+        async function previewAttachment(applicationId, attachmentId, filename, mimeType) {
+            const isImage = mimeType && mimeType.startsWith('image/');
+            const isPdf = mimeType && mimeType === 'application/pdf';
+            const downloadUrl = `${API_BASE}/api/v1/applications/${applicationId}/attachment/${attachmentId}`;
+
+            const modalHtml = `
+                <div class="attachment-preview-modal" onclick="if(event.target===this)this.remove()">
+                    <div class="attachment-preview-container">
+                        <div class="attachment-preview-header">
+                            <h3>${escapeHtml(filename)}</h3>
+                            <div style="display:flex;gap:8px;">
+                                <a href="${downloadUrl}" class="btn-action btn-view" style="text-decoration:none;">Download</a>
+                                <button class="modal-close" onclick="this.closest('.attachment-preview-modal').remove()">&times;</button>
+                            </div>
+                        </div>
+                        <div class="attachment-preview-body" id="previewBody">
+                            <div class="download-fallback"><p>Loading preview...</p></div>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const bodyEl = document.getElementById('previewBody');
+
+            try {
+                const r = await api(`/api/v1/applications/${applicationId}/attachment/${attachmentId}?preview=true`);
+                if (!r.ok) {
+                    const errData = await r.json().catch(() => ({ detail: r.statusText }));
+                    const isMissing = r.status === 410;
+                    bodyEl.innerHTML = `
+                        <div class="download-fallback">
+                            <p style="color:#c62828;">Failed to load preview: ${escapeHtml(errData.detail || 'Unknown error')}</p>
+                            ${isMissing ? '<p style="font-size:13px;color:#888;">Uploaded files are stored temporarily on the server. They may have been deleted during a server deployment. Please re-upload the file if needed.</p>' : ''}
+                            <p style="font-size:13px;color:#888;">${escapeHtml(filename)}</p>
+                            <a href="${downloadUrl}" class="btn-submit" style="display:inline-block;width:auto;text-decoration:none;padding:12px 24px;">Download instead</a>
+                        </div>`;
+                    return;
+                }
+                const blob = await r.blob();
+                const objectUrl = URL.createObjectURL(blob);
+
+                if (isImage) {
+                    bodyEl.innerHTML = `<img src="${objectUrl}" alt="${escapeHtml(filename)}" style="max-width:100%;max-height:70vh;object-fit:contain;border-radius:4px;">`;
+                } else if (isPdf) {
+                    bodyEl.innerHTML = `<iframe src="${objectUrl}" style="width:100%;height:70vh;border:none;border-radius:4px;"></iframe>`;
+                } else {
+                    bodyEl.innerHTML = `
+                        <div class="download-fallback">
+                            <p>Preview not available for this file type.</p>
+                            <p style="font-size:13px;color:#888;">${escapeHtml(filename)}</p>
+                            <a href="${downloadUrl}" class="btn-submit" style="display:inline-block;width:auto;text-decoration:none;padding:12px 24px;">Download to Open</a>
+                        </div>`;
+                }
+            } catch (e) {
+                bodyEl.innerHTML = `
+                    <div class="download-fallback">
+                        <p style="color:#c62828;">Failed to load preview: ${escapeHtml(e.message)}</p>
+                        <p style="font-size:13px;color:#888;">${escapeHtml(filename)}</p>
+                        <a href="${downloadUrl}" class="btn-submit" style="display:inline-block;width:auto;text-decoration:none;padding:12px 24px;">Download instead</a>
+                    </div>`;
+            }
+        }
+
 
         function escapeHtml(s) {
             if (s === null || s === undefined) return '';

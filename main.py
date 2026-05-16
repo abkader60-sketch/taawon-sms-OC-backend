@@ -218,6 +218,9 @@ ALTER TABLE Site_Access_ID ALTER COLUMN gov_id_number   DROP NOT NULL;
 ALTER TABLE Site_Access_ID ALTER COLUMN blood_type      DROP NOT NULL;
 ALTER TABLE Site_Access_ID ALTER COLUMN mobile_number   DROP NOT NULL;
 ALTER TABLE Site_Access_ID ALTER COLUMN whatsapp_number DROP NOT NULL;
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS iqama_expiry_date DATE;
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS passport_expiry_date DATE;
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS insurance_expiry_date DATE;
 
 CREATE TABLE IF NOT EXISTS Workflow_History (
     history_id            SERIAL PRIMARY KEY,
@@ -604,6 +607,9 @@ class ApplicationFieldsUpdate(BaseModel):
     is_third_party_sponsor: Optional[bool] = None
     date_joined:      Optional[str] = None
     reports_to:       Optional[str] = None
+    iqama_expiry_date:   Optional[str] = None
+    passport_expiry_date: Optional[str] = None
+    insurance_expiry_date: Optional[str] = None
 
 
 class SettingUpdate(BaseModel):
@@ -1983,6 +1989,9 @@ async def submit_application(
     is_third_party_sponsor: bool = Form(False),
     date_joined: Optional[str] = Form(None),
     reports_to: Optional[str] = Form(None),
+    iqama_expiry_date: Optional[str] = Form(None),
+    passport_expiry_date: Optional[str] = Form(None),
+    insurance_expiry_date: Optional[str] = Form(None),
     id_copy: Optional[UploadFile] = File(None),
     insurance: Optional[UploadFile] = File(None),
     photo: Optional[UploadFile] = File(None),
@@ -2022,6 +2031,10 @@ async def submit_application(
         date_joined_val = parse_date_or_none(date_joined)
 
         async with conn.transaction():
+            iqama_expiry_val = parse_date_or_none(iqama_expiry_date)
+            passport_expiry_val = parse_date_or_none(passport_expiry_date)
+            insurance_expiry_val = parse_date_or_none(insurance_expiry_date)
+
             row = await conn.fetchrow(
                 """INSERT INTO Site_Access_ID
                       (full_name, job_title, employee_number, organization,
@@ -2029,8 +2042,10 @@ async def submit_application(
                        mobile_number, whatsapp_number, email,
                        is_third_party_sponsor, submitted_by_user_id, submitted_by_external_id,
                        workflow_state, workflow_type,
-                       form_variant, date_joined, reports_to)
-                   VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
+                       form_variant, date_joined, reports_to,
+                       iqama_expiry_date, passport_expiry_date, insurance_expiry_date)
+                   VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,
+                           $20,$21,$22)
                 RETURNING application_id, workflow_state""",
                 full_name, job_title, employee_number, organization,
                 subcontractor, gov_id_type, gov_id_number, blood_type,
@@ -2038,6 +2053,7 @@ async def submit_application(
                 is_third_party_sponsor, submitter_user_id, submitter_external_id,
                 starting_state, mode,
                 form_variant, date_joined_val, reports_to,
+                iqama_expiry_val, passport_expiry_val, insurance_expiry_val,
             )
             app_id = row["application_id"]
 
@@ -2112,6 +2128,7 @@ async def export_applications_xlsx(request: Request):
                       s.gov_id_type, s.gov_id_number, s.blood_type,
                       s.job_title, s.employee_number, s.organization, s.subcontractor,
                       s.is_third_party_sponsor, s.date_joined, s.reports_to,
+                      s.iqama_expiry_date, s.passport_expiry_date, s.insurance_expiry_date,
                       u.full_name AS submitter_name
                  FROM Site_Access_ID s
             LEFT JOIN App_Users u ON u.user_id = s.submitted_by_user_id
@@ -2128,7 +2145,8 @@ async def export_applications_xlsx(request: Request):
         "Full Name", "Email", "Mobile", "WhatsApp",
         "Gov ID Type", "Gov ID Number", "Blood Type",
         "Job/Trade", "Employee #", "Organization", "Subcontractor",
-        "3rd-Party Sponsor", "Date Joined", "Reports To", "Submitted By",
+        "3rd-Party Sponsor", "Date Joined", "Reports To",
+        "Iqama Expiry", "Passport Expiry", "Insurance Expiry", "Submitted By",
     ]
     ws.append(headers)
     header_font = Font(bold=True, color="FFFFFF")
@@ -2150,6 +2168,9 @@ async def export_applications_xlsx(request: Request):
             "Yes" if r["is_third_party_sponsor"] else "No",
             r["date_joined"].strftime("%Y-%m-%d") if r["date_joined"] else "",
             r["reports_to"] or "",
+            r["iqama_expiry_date"].strftime("%Y-%m-%d") if r["iqama_expiry_date"] else "",
+            r["passport_expiry_date"].strftime("%Y-%m-%d") if r["passport_expiry_date"] else "",
+            r["insurance_expiry_date"].strftime("%Y-%m-%d") if r["insurance_expiry_date"] else "",
             r["submitter_name"] or "",
         ])
     for col_letter in [chr(ord('A') + i) for i in range(len(headers))]:
@@ -2241,10 +2262,13 @@ async def edit_application_fields(application_id: int, payload: ApplicationField
                 sets.append(f"{f} = ${len(vals) + 1}")
                 vals.append(v)
                 changed_summary.append(f)
-        if payload.date_joined is not None:
-            sets.append(f"date_joined = ${len(vals) + 1}")
-            vals.append(parse_date_or_none(payload.date_joined))
-            changed_summary.append("date_joined")
+        date_fields = ["date_joined", "iqama_expiry_date", "passport_expiry_date", "insurance_expiry_date"]
+        for f in date_fields:
+            v = getattr(payload, f)
+            if v is not None:
+                sets.append(f"{f} = ${len(vals) + 1}")
+                vals.append(parse_date_or_none(v))
+                changed_summary.append(f)
         if not sets:
             raise HTTPException(400, "No editable fields provided")
         vals.append(application_id)
