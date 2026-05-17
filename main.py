@@ -108,24 +108,26 @@ ALLOWED_MIME_PREFIXES = ("image/",)
 ALLOWED_MIME_EXACT = {"application/pdf"}
 
 # MinIO / S3-compatible storage (Railway MinIO add-on)
-MINIO_ENDPOINT   = os.getenv("MINIO_ENDPOINT", "")
-MINIO_ACCESS_KEY = os.getenv("MINIO_ROOT_USER", "")
-MINIO_SECRET_KEY = os.getenv("MINIO_ROOT_PASSWORD", "")
-MINIO_BUCKET     = os.getenv("MINIO_BUCKET", "attachments")
+# Accepts both Railway MinIO add-on names and standard MinIO names
+MINIO_ENDPOINT   = os.getenv("MINIO_ENDPOINT", os.getenv("AWS_ENDPOINT_URL", ""))
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY") or os.getenv("MINIO_ROOT_USER", os.getenv("AWS_ACCESS_KEY_ID", ""))
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY") or os.getenv("MINIO_ROOT_PASSWORD", os.getenv("AWS_SECRET_ACCESS_KEY", ""))
+MINIO_BUCKET     = os.getenv("MINIO_BUCKET", os.getenv("AWS_S3_BUCKET", "attachments"))
 USE_S3 = bool(MINIO_ENDPOINT)
 
 if USE_S3:
     import boto3
     try:
+        endpoint = MINIO_ENDPOINT if MINIO_ENDPOINT.startswith("http") else f"http://{MINIO_ENDPOINT}"
         s3_client = boto3.client(
             "s3",
-            endpoint_url=f"http://{MINIO_ENDPOINT}",
+            endpoint_url=endpoint,
             aws_access_key_id=MINIO_ACCESS_KEY,
             aws_secret_access_key=MINIO_SECRET_KEY,
-            region_name="us-east-1",
+            region_name=os.getenv("AWS_REGION", "us-east-1"),
         )
         s3_client.create_bucket(Bucket=MINIO_BUCKET)
-        print(f"MinIO/S3 bucket '{MINIO_BUCKET}' ready at {MINIO_ENDPOINT}")
+        print(f"MinIO/S3 bucket '{MINIO_BUCKET}' ready at {endpoint}")
     except Exception as exc:
         print(f"WARNING: MinIO/S3 init failed ({exc}). Falling back to local filesystem.", file=sys.stderr)
         s3_client = None
