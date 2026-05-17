@@ -2198,6 +2198,135 @@ async def export_applications_xlsx(request: Request):
     )
 
 
+# New column name normalisation helper for Excel imports
+_IMPORT_ALIASES = {
+    "full_name": ("full_name", "fullname", "full name", "name", "applicant name"),
+    "organization": ("organization", "company", "company name", "employer", "org"),
+    "subcontractor": ("subcontractor", "sub contractor", "sub"),
+    "gov_id_type": ("gov_id_type", "gov id type", "id type", "gov_id"),
+    "gov_id_number": ("gov_id_number", "gov id number", "id number", "iqama number", "national id", "gov_id"),
+    "blood_type": ("blood_type", "bloodtype", "blood type"),
+    "mobile_number": ("mobile_number", "mobile number", "mobile", "phone", "phone number", "contact"),
+    "whatsapp_number": ("whatsapp_number", "whatsapp number", "whatsapp"),
+    "email": ("email", "e-mail", "mail"),
+    "employee_number": ("employee_number", "employee number", "employee no", "emp no", "emp_number", "empno"),
+    "date_joined": ("date_joined", "date joined", "joined date", "join date"),
+    "reports_to": ("reports_to", "reports to", "report to", "supervisor"),
+    "full_name_arabic": ("full_name_arabic", "full name arabic", "arabic name", "name_ar", "arabic"),
+}
+
+def _normalise_import_header(raw: str) -> str:
+    """Map an Excel column header to the canonical field name."""
+    raw = raw.strip().lower().replace("_", " ").replace("-", " ")
+    for canonical, aliases in _IMPORT_ALIASES.items():
+        if raw in aliases or raw.replace(" ", "_") in aliases:
+            return canonical
+    return raw  # pass through unknown headers
+
+
+@app.post("/api/v1/admin/applications/import")
+async def admin_import_applications(request: Request, file: UploadFile = File(...)):
+    """Bulk-import backlog applications from an Excel file.
+
+    Expected columns (first row = headers; flexible naming accepted):
+      full_name*, organization*, employee_number, gov_id_number,
+      blood_type, mobile_number, whatsapp_number, email, date_joined,
+      reports_to
+
+    * required. Rows missing either are skipped.
+    New records get workflow_state = 'Approved' and a history entry.
+    """
+    await require_permission(request, "manage_system_settings")
+    contents = await file.read()
+    from openpyxl import load_workbook
+    wb = load_workbook(BytesIO(contents))
+    ws = wb.active
+    headers = [_normalise_import_header(str(cell.value or "")) for cell in ws[1]]
+
+    required = ("full_name", "organization")
+    missing = [c for c in required if c not in headers]
+    if missing:
+        raise HTTPException(400, f"Missing required column(s): {', '.join(missing)}")
+
+    fi = {h: i for i, h in enumerate(headers)}
+
+    def _val(row, field):
+        idx = fi.get(field)
+        if idx is None:
+            return None
+        v = row[idx]
+        if v is None:
+            return None
+        return str(v).strip()
+
+    conn = await get_conn()
+    try:
+        imported, skipped, errors = 0, 0, []
+        app_ids = []
+        mode = "security_only"
+
+        for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            full_name = _val(row, "full_name")
+            organization = _val(row, "organization")
+            if not full_name or not organization:
+                skipped += 1
+                errors.append(f"Row {row_idx}: missing required field(s) — skipped")
+                continue
+
+            try:
+                async with conn.transaction():
+                    r = await conn.fetchrow(
+                        """INSERT INTO Site_Access_ID
+                              (full_name, organization, subcontractor,
+                               gov_id_type, gov_id_number, blood_type,
+                               mobile_number, whatsapp_number, email,
+                               employee_number, date_joined, reports_to,
+                               workflow_state, workflow_type, form_variant,
+                               submitted_by_user_id)
+                           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,
+                                   'Approved', $13, 'brief', $14)
+                           RETURNING application_id""",
+                        full_name,
+                        organization,
+                        _val(row, "subcontractor"),
+                        _val(row, "gov_id_type") or "Iqama",
+                        _val(row, "gov_id_number"),
+                        _val(row, "blood_type"),
+                        _val(row, "mobile_number"),
+                        _val(row, "whatsapp_number"),
+                        _val(row, "email"),
+                        _val(row, "employee_number"),
+                        parse_date_or_none(_val(row, "date_joined")),
+                        _val(row, "reports_to"),
+                        mode,
+                        None,  # imported by system, not a specific user
+                    )
+                    app_id = r["application_id"]
+                    await conn.execute(
+                        """INSERT INTO Workflow_History
+                              (application_id, action_taken, previous_state, new_state,
+                               acted_by_user_id, comments)
+                           VALUES ($1, 'Bulk Import', 'Draft', 'Approved', $2,
+                                   'Imported via bulk backlog upload')""",
+                        app_id, None,
+                    )
+                    imported += 1
+                    app_ids.append(app_id)
+            except Exception as exc:
+                skipped += 1
+                errors.append(f"Row {row_idx} ({full_name}): {exc}")
+
+        return {
+            "status": "ok",
+            "imported": imported,
+            "skipped": skipped,
+            "errors": errors[:50],  # cap to avoid giant response
+            "application_ids": app_ids,
+        }
+    finally:
+        await conn.close()
+
+
 @app.get("/api/v1/applications/{application_id}")
 async def get_application_full(application_id: int, request: Request):
     await require_permission(request, "view_all_applications")
