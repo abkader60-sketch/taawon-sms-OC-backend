@@ -2429,6 +2429,108 @@ async def edit_application_fields(application_id: int, payload: ApplicationField
         await conn.close()
 
 
+@app.post("/api/v1/applications/{application_id}/attachments")
+async def add_application_attachment(
+    application_id: int, request: Request,
+    attachment_type: str = Form(...),
+    file: UploadFile = File(...),
+):
+    """Upload an attachment to an existing (pending) application."""
+    p = await require_permission(request, "edit_application")
+    conn = await get_conn()
+    try:
+        app_row = await conn.fetchrow(
+            "SELECT workflow_state FROM Site_Access_ID WHERE application_id = $1",
+            application_id,
+        )
+        if not app_row:
+            raise HTTPException(404, "Application not found")
+        if app_row["workflow_state"] in ("Approved", "Rejected", "Cancelled"):
+            raise HTTPException(409, f"Application is in '{app_row['workflow_state']}' state — cannot modify attachments")
+    finally:
+        await conn.close()
+
+    meta = await _save_upload(file, application_id, attachment_type)
+
+    conn = await get_conn()
+    try:
+        await conn.execute(
+            """INSERT INTO Attachments
+                  (application_id, attachment_type, file_path, original_filename,
+                   mime_type, file_size_bytes, uploaded_by_user_id)
+               VALUES ($1,$2,$3,$4,$5,$6,$7)""",
+            application_id, attachment_type, meta["file_path"],
+            meta["original_filename"], meta["mime_type"],
+            meta["file_size_bytes"], None,
+        )
+        await conn.execute(
+            """INSERT INTO Workflow_History
+                  (application_id, action_taken, previous_state, new_state,
+                   acted_by_user_id, comments)
+               VALUES ($1, 'Edit', $2, $2, $3, $4)""",
+            application_id, app_row["workflow_state"], p.principal_id,
+            f"Attachment added: {attachment_type} ({meta['original_filename']})",
+        )
+        return {"status": "ok", "file_path": meta["file_path"], "original_filename": meta["original_filename"]}
+    finally:
+        await conn.close()
+
+
+@app.delete("/api/v1/applications/{application_id}/attachments/{attachment_id}")
+async def delete_application_attachment(
+    application_id: int, attachment_id: int, request: Request,
+):
+    """Delete an attachment from a pending application."""
+    p = await require_permission(request, "edit_application")
+    conn = await get_conn()
+    try:
+        app_row = await conn.fetchrow(
+            "SELECT workflow_state FROM Site_Access_ID WHERE application_id = $1",
+            application_id,
+        )
+        if not app_row:
+            raise HTTPException(404, "Application not found")
+        if app_row["workflow_state"] in ("Approved", "Rejected", "Cancelled"):
+            raise HTTPException(409, f"Application is in '{app_row['workflow_state']}' state — cannot modify attachments")
+
+        att = await conn.fetchrow(
+            "SELECT attachment_id, attachment_type, file_path, original_filename FROM Attachments WHERE attachment_id = $1 AND application_id = $2",
+            attachment_id, application_id,
+        )
+        if not att:
+            raise HTTPException(404, "Attachment not found")
+
+        # Delete the file from storage
+        if USE_S3 and s3_client:
+            try:
+                s3_client.delete_object(Bucket=MINIO_BUCKET, Key=att["file_path"])
+            except Exception:
+                pass  # best-effort
+        else:
+            full_path = (UPLOADS_DIR / att["file_path"]).resolve()
+            try:
+                full_path.relative_to(UPLOADS_DIR.resolve())
+                if full_path.is_file():
+                    full_path.unlink()
+            except ValueError:
+                pass
+
+        await conn.execute(
+            "DELETE FROM Attachments WHERE attachment_id = $1", attachment_id,
+        )
+        await conn.execute(
+            """INSERT INTO Workflow_History
+                  (application_id, action_taken, previous_state, new_state,
+                   acted_by_user_id, comments)
+               VALUES ($1, 'Edit', $2, $2, $3, $4)""",
+            application_id, app_row["workflow_state"], p.principal_id,
+            f"Attachment removed: {att['attachment_type']} ({att['original_filename']})",
+        )
+        return {"status": "ok", "deleted_attachment_id": attachment_id}
+    finally:
+        await conn.close()
+
+
 @app.get("/api/v1/applications/{application_id}/attachment/{attachment_id}")
 async def download_attachment(
     application_id: int, attachment_id: int, request: Request,
