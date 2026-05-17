@@ -483,7 +483,9 @@ def generate_password() -> str:
 
 
 @app.post("/api/v1/admin/init-db")
-async def init_db():
+async def init_db(request: Request):
+    # Safety: if admin users already exist, require auth + manage_system_settings.
+    # On a fresh DB (no App_Users table yet), unauth calls are allowed.
     try:
         conn = await get_conn()
     except Exception as e:
@@ -491,6 +493,12 @@ async def init_db():
             status_code=500,
             content={"status": "error", "message": f"Database connection failed: {str(e)}", "hint": "Check that DATABASE_URL is set in Railway Variables."}
         )
+    try:
+        existing_admin = await conn.fetchval("SELECT 1 FROM App_Users LIMIT 1")
+    except Exception:
+        existing_admin = None  # table doesn't exist — fresh DB
+    if existing_admin:
+        await require_permission(request, "manage_system_settings")
     try:
         await conn.execute(SCHEMA_SQL)
         await conn.execute(SEED_SQL)
