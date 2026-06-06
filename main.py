@@ -223,6 +223,24 @@ ALTER TABLE Site_Access_ID ALTER COLUMN whatsapp_number DROP NOT NULL;
 ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS iqama_expiry_date DATE;
 ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS passport_expiry_date DATE;
 ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS insurance_expiry_date DATE;
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS gender VARCHAR(10);
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS nationality VARCHAR(100);
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS date_of_birth DATE;
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS passport_number VARCHAR(50);
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS language VARCHAR(50);
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS safety_induction_date DATE;
+
+CREATE TABLE IF NOT EXISTS Non_Grata (
+    ng_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    gender VARCHAR(10),
+    nationality VARCHAR(100),
+    gov_id_type VARCHAR(20),
+    gov_id_number VARCHAR(50),
+    date_of_birth DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by INT REFERENCES App_Users(user_id)
+);
 
 CREATE TABLE IF NOT EXISTS Workflow_History (
     history_id            SERIAL PRIMARY KEY,
@@ -620,6 +638,12 @@ class ApplicationFieldsUpdate(BaseModel):
     iqama_expiry_date:   Optional[str] = None
     passport_expiry_date: Optional[str] = None
     insurance_expiry_date: Optional[str] = None
+    gender: Optional[str] = None
+    nationality: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    passport_number: Optional[str] = None
+    language: Optional[str] = None
+    safety_induction_date: Optional[str] = None
 
 
 class SettingUpdate(BaseModel):
@@ -2002,6 +2026,12 @@ async def submit_application(
     iqama_expiry_date: Optional[str] = Form(None),
     passport_expiry_date: Optional[str] = Form(None),
     insurance_expiry_date: Optional[str] = Form(None),
+    gender: Optional[str] = Form(None),
+    nationality: Optional[str] = Form(None),
+    date_of_birth: Optional[str] = Form(None),
+    passport_number: Optional[str] = Form(None),
+    language: Optional[str] = Form(None),
+    safety_induction_date: Optional[str] = Form(None),
     id_copy: Optional[UploadFile] = File(None),
     insurance: Optional[UploadFile] = File(None),
     photo: Optional[UploadFile] = File(None),
@@ -2044,6 +2074,8 @@ async def submit_application(
             iqama_expiry_val = parse_date_or_none(iqama_expiry_date)
             passport_expiry_val = parse_date_or_none(passport_expiry_date)
             insurance_expiry_val = parse_date_or_none(insurance_expiry_date)
+            date_of_birth_val = parse_date_or_none(date_of_birth)
+            safety_induction_val = parse_date_or_none(safety_induction_date)
 
             row = await conn.fetchrow(
                 """INSERT INTO Site_Access_ID
@@ -2053,9 +2085,11 @@ async def submit_application(
                        is_third_party_sponsor, submitted_by_user_id, submitted_by_external_id,
                        workflow_state, workflow_type,
                        form_variant, date_joined, reports_to,
-                       iqama_expiry_date, passport_expiry_date, insurance_expiry_date)
+                       iqama_expiry_date, passport_expiry_date, insurance_expiry_date,
+                       gender, nationality, date_of_birth, passport_number,
+                       language, safety_induction_date)
                    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,
-                           $20,$21,$22)
+                           $20,$21,$22,$23,$24,$25,$26,$27,$28)
                 RETURNING application_id, workflow_state""",
                 full_name, job_title, employee_number, organization,
                 subcontractor, gov_id_type, gov_id_number, blood_type,
@@ -2064,6 +2098,8 @@ async def submit_application(
                 starting_state, mode,
                 form_variant, date_joined_val, reports_to,
                 iqama_expiry_val, passport_expiry_val, insurance_expiry_val,
+                gender, nationality, date_of_birth_val, passport_number,
+                language, safety_induction_val,
             )
             app_id = row["application_id"]
 
@@ -2139,6 +2175,8 @@ async def export_applications_xlsx(request: Request):
                       s.job_title, s.employee_number, s.organization, s.subcontractor,
                       s.is_third_party_sponsor, s.date_joined, s.reports_to,
                       s.iqama_expiry_date, s.passport_expiry_date, s.insurance_expiry_date,
+                      s.gender, s.nationality, s.date_of_birth, s.passport_number,
+                      s.language, s.safety_induction_date,
                       u.full_name AS submitter_name
                  FROM Site_Access_ID s
             LEFT JOIN App_Users u ON u.user_id = s.submitted_by_user_id
@@ -2156,7 +2194,10 @@ async def export_applications_xlsx(request: Request):
         "Gov ID Type", "Gov ID Number", "Blood Type",
         "Job/Trade", "Employee #", "Organization", "Subcontractor",
         "3rd-Party Sponsor", "Date Joined", "Reports To",
-        "Iqama Expiry", "Passport Expiry", "Insurance Expiry", "Submitted By",
+        "Iqama Expiry", "Passport Expiry", "Insurance Expiry",
+        "Gender", "Nationality", "Date of Birth", "Passport Number",
+        "Language", "Safety Induction Date",
+        "Submitted By",
     ]
     ws.append(headers)
     header_font = Font(bold=True, color="FFFFFF")
@@ -2181,6 +2222,11 @@ async def export_applications_xlsx(request: Request):
             r["iqama_expiry_date"].strftime("%Y-%m-%d") if r["iqama_expiry_date"] else "",
             r["passport_expiry_date"].strftime("%Y-%m-%d") if r["passport_expiry_date"] else "",
             r["insurance_expiry_date"].strftime("%Y-%m-%d") if r["insurance_expiry_date"] else "",
+            r["gender"] or "", r["nationality"] or "",
+            r["date_of_birth"].strftime("%Y-%m-%d") if r["date_of_birth"] else "",
+            r["passport_number"] or "",
+            r["language"] or "",
+            r["safety_induction_date"].strftime("%Y-%m-%d") if r["safety_induction_date"] else "",
             r["submitter_name"] or "",
         ])
     for col_letter in [chr(ord('A') + i) for i in range(len(headers))]:
@@ -2327,6 +2373,80 @@ async def admin_import_applications(request: Request, file: UploadFile = File(..
         await conn.close()
 
 
+@app.get("/api/v1/admin/non-grata")
+async def list_non_grata(request: Request):
+    await require_permission(request, "manage_system_settings")
+    conn = await get_conn()
+    try:
+        rows = await conn.fetch(
+            "SELECT ng_id, full_name, gender, nationality, gov_id_type, gov_id_number, "
+            "date_of_birth, created_at FROM Non_Grata ORDER BY ng_id DESC"
+        )
+        return {"entries": [dict(r) for r in rows]}
+    finally:
+        await conn.close()
+
+
+@app.post("/api/v1/admin/non-grata/import")
+async def import_non_grata(request: Request, file: UploadFile = File(...)):
+    await require_permission(request, "manage_system_settings")
+    conn = await get_conn()
+    try:
+        contents = await file.read()
+        from openpyxl import load_workbook
+        wb = load_workbook(BytesIO(contents))
+        ws = wb.active
+        headers = [str(cell.value).strip().lower() if cell.value else "" for cell in ws[1]]
+
+        aliases = {
+            "full_name": ("full_name", "fullname", "full name", "name"),
+            "gender": ("gender", "sex"),
+            "nationality": ("nationality", "nation"),
+            "gov_id_type": ("gov_id_type", "gov id type", "id type", "id_type"),
+            "gov_id_number": ("gov_id_number", "gov id number", "id number", "id_number"),
+            "date_of_birth": ("date_of_birth", "date of birth", "dob", "birth date"),
+        }
+
+        col = {}
+        for key, alts in aliases.items():
+            for h in headers:
+                if h in alts:
+                    col[key] = headers.index(h)
+                    break
+
+        if "full_name" not in col:
+            raise HTTPException(400, "Excel must have a 'full_name' or 'name' column")
+
+        imported, skipped = 0, 0
+        errors = []
+        async with conn.transaction():
+            for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    full_name = str(row[col["full_name"]]).strip() if row[col["full_name"]] else ""
+                    if not full_name:
+                        skipped += 1
+                        continue
+                    gender = str(row[col["gender"]]).strip() if "gender" in col and row[col["gender"]] else None
+                    nationality = str(row[col["nationality"]]).strip() if "nationality" in col and row[col["nationality"]] else None
+                    gov_id_type = str(row[col["gov_id_type"]]).strip() if "gov_id_type" in col and row[col["gov_id_type"]] else None
+                    gov_id_number = str(row[col["gov_id_number"]]).strip() if "gov_id_number" in col and row[col["gov_id_number"]] else None
+                    dob_str = str(row[col["date_of_birth"]]).strip() if "date_of_birth" in col and row[col["date_of_birth"]] else None
+                    dob = parse_date_or_none(dob_str)
+                    await conn.execute(
+                        """INSERT INTO Non_Grata
+                              (full_name, gender, nationality, gov_id_type, gov_id_number, date_of_birth)
+                           VALUES ($1,$2,$3,$4,$5,$6)""",
+                        full_name, gender, nationality, gov_id_type, gov_id_number, dob,
+                    )
+                    imported += 1
+                except Exception as exc:
+                    skipped += 1
+                    errors.append(f"Row {row_idx}: {exc}")
+        return {"status": "ok", "imported": imported, "skipped": skipped, "errors": errors[:50]}
+    finally:
+        await conn.close()
+
+
 @app.get("/api/v1/applications/{application_id}")
 async def get_application_full(application_id: int, request: Request):
     await require_permission(request, "view_all_applications")
@@ -2392,6 +2512,8 @@ async def edit_application_fields(application_id: int, payload: ApplicationField
             "full_name", "job_title", "employee_number", "organization", "subcontractor",
             "gov_id_type", "gov_id_number", "blood_type", "mobile_number", "whatsapp_number",
             "email", "is_third_party_sponsor", "reports_to",
+            "gender", "nationality", "date_of_birth", "passport_number",
+            "language", "safety_induction_date",
         ]
         sets, vals = [], []
         changed_summary = []
