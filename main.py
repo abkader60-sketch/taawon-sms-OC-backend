@@ -69,6 +69,7 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.utils import get_column_letter
 from pydantic import BaseModel
 
 # ============================================================
@@ -229,6 +230,7 @@ ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS date_of_birth DATE;
 ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS passport_number VARCHAR(50);
 ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS language VARCHAR(50);
 ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS safety_induction_date DATE;
+ALTER TABLE Site_Access_ID ADD COLUMN IF NOT EXISTS sponsor_name VARCHAR(150);
 
 CREATE TABLE IF NOT EXISTS Non_Grata (
     ng_id SERIAL PRIMARY KEY,
@@ -238,6 +240,44 @@ CREATE TABLE IF NOT EXISTS Non_Grata (
     gov_id_type VARCHAR(20),
     gov_id_number VARCHAR(50),
     date_of_birth DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by INT REFERENCES App_Users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS Induction_Workbench (
+    iw_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(150) NOT NULL,
+    gender VARCHAR(10),
+    nationality VARCHAR(100),
+    date_of_birth DATE,
+    gov_id_number VARCHAR(50),
+    mobile_number VARCHAR(20),
+    blood_type VARCHAR(10),
+    language VARCHAR(50),
+    company VARCHAR(200),
+    legal_agreement VARCHAR(50),
+    insurance_validity DATE,
+    profession_iqama VARCHAR(200),
+    profession_work VARCHAR(200),
+    location VARCHAR(200),
+    induction_date DATE,
+    status VARCHAR(50),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by INT REFERENCES App_Users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS System_Users (
+    su_id SERIAL PRIMARY KEY,
+    employee_name VARCHAR(150) NOT NULL,
+    gov_id_number VARCHAR(50),
+    email VARCHAR(200),
+    project VARCHAR(200),
+    company VARCHAR(200),
+    job_title VARCHAR(200),
+    location VARCHAR(200),
+    mobile_number VARCHAR(20),
+    nationality VARCHAR(100),
+    role VARCHAR(100),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     created_by INT REFERENCES App_Users(user_id)
 );
@@ -644,6 +684,7 @@ class ApplicationFieldsUpdate(BaseModel):
     passport_number: Optional[str] = None
     language: Optional[str] = None
     safety_induction_date: Optional[str] = None
+    sponsor_name: Optional[str] = None
 
 
 class SettingUpdate(BaseModel):
@@ -2032,6 +2073,7 @@ async def submit_application(
     passport_number: Optional[str] = Form(None),
     language: Optional[str] = Form(None),
     safety_induction_date: Optional[str] = Form(None),
+    sponsor_name: Optional[str] = Form(None),
     id_copy: Optional[UploadFile] = File(None),
     insurance: Optional[UploadFile] = File(None),
     photo: Optional[UploadFile] = File(None),
@@ -2087,9 +2129,9 @@ async def submit_application(
                        form_variant, date_joined, reports_to,
                        iqama_expiry_date, passport_expiry_date, insurance_expiry_date,
                        gender, nationality, date_of_birth, passport_number,
-                       language, safety_induction_date)
+                       language, safety_induction_date, sponsor_name)
                    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,
-                           $20,$21,$22,$23,$24,$25,$26,$27,$28)
+                           $20,$21,$22,$23,$24,$25,$26,$27,$28,$29)
                 RETURNING application_id, workflow_state""",
                 full_name, job_title, employee_number, organization,
                 subcontractor, gov_id_type, gov_id_number, blood_type,
@@ -2099,7 +2141,7 @@ async def submit_application(
                 form_variant, date_joined_val, reports_to,
                 iqama_expiry_val, passport_expiry_val, insurance_expiry_val,
                 gender, nationality, date_of_birth_val, passport_number,
-                language, safety_induction_val,
+                language, safety_induction_val, sponsor_name,
             )
             app_id = row["application_id"]
 
@@ -2176,7 +2218,7 @@ async def export_applications_xlsx(request: Request):
                       s.is_third_party_sponsor, s.date_joined, s.reports_to,
                       s.iqama_expiry_date, s.passport_expiry_date, s.insurance_expiry_date,
                       s.gender, s.nationality, s.date_of_birth, s.passport_number,
-                      s.language, s.safety_induction_date,
+                      s.language, s.safety_induction_date, s.sponsor_name,
                       u.full_name AS submitter_name
                  FROM Site_Access_ID s
             LEFT JOIN App_Users u ON u.user_id = s.submitted_by_user_id
@@ -2196,7 +2238,7 @@ async def export_applications_xlsx(request: Request):
         "3rd-Party Sponsor", "Date Joined", "Reports To",
         "Iqama Expiry", "Passport Expiry", "Insurance Expiry",
         "Gender", "Nationality", "Date of Birth", "Passport Number",
-        "Language", "Safety Induction Date",
+        "Language", "Safety Induction Date", "Sponsor Name",
         "Submitted By",
     ]
     ws.append(headers)
@@ -2227,9 +2269,11 @@ async def export_applications_xlsx(request: Request):
             r["passport_number"] or "",
             r["language"] or "",
             r["safety_induction_date"].strftime("%Y-%m-%d") if r["safety_induction_date"] else "",
+            r["sponsor_name"] or "",
             r["submitter_name"] or "",
         ])
-    for col_letter in [chr(ord('A') + i) for i in range(len(headers))]:
+    for i in range(len(headers)):
+        col_letter = get_column_letter(i + 1)
         max_len = max((len(str(c.value)) if c.value is not None else 0) for c in ws[col_letter])
         ws.column_dimensions[col_letter].width = min(max_len + 2, 40)
     ws.freeze_panes = "A2"
@@ -2513,7 +2557,7 @@ async def edit_application_fields(application_id: int, payload: ApplicationField
             "gov_id_type", "gov_id_number", "blood_type", "mobile_number", "whatsapp_number",
             "email", "is_third_party_sponsor", "reports_to",
             "gender", "nationality", "date_of_birth", "passport_number",
-            "language", "safety_induction_date",
+            "language", "safety_induction_date", "sponsor_name",
         ]
         sets, vals = [], []
         changed_summary = []
@@ -2783,6 +2827,217 @@ async def list_history(request: Request):
                 LIMIT 500"""
         )
         return {"history": [dict(r) for r in rows]}
+    finally:
+        await conn.close()
+
+
+@app.get("/api/v1/admin/induction-workbench")
+async def list_induction_workbench(request: Request):
+    await require_permission(request, "manage_system_settings")
+    conn = await get_conn()
+    try:
+        rows = await conn.fetch(
+            "SELECT iw_id, full_name, gender, nationality, date_of_birth, gov_id_number, "
+            "mobile_number, blood_type, language, company, legal_agreement, insurance_validity, "
+            "profession_iqama, profession_work, location, induction_date, status, created_at "
+            "FROM Induction_Workbench ORDER BY iw_id DESC"
+        )
+        return {"entries": [dict(r) for r in rows]}
+    finally:
+        await conn.close()
+
+
+@app.post("/api/v1/admin/induction-workbench/import")
+async def import_induction_workbench(request: Request, file: UploadFile = File(...)):
+    await require_permission(request, "manage_system_settings")
+    conn = await get_conn()
+    try:
+        contents = await file.read()
+        from openpyxl import load_workbook
+        wb = load_workbook(BytesIO(contents))
+        ws = wb.active
+        headers = [str(cell.value).strip().lower() if cell.value else "" for cell in ws[1]]
+
+        aliases = {
+            "full_name": ("full_name", "fullname", "full name", "name", "employee name"),
+            "gender": ("gender", "sex"),
+            "nationality": ("nationality", "nation"),
+            "date_of_birth": ("date_of_birth", "date of birth", "dob", "birth date"),
+            "gov_id_number": ("gov_id_number", "gov id number", "id number", "id_number", "id/ iq #", "id/iq #", "iqama/id"),
+            "mobile_number": ("mobile_number", "mobile number", "mobil #", "mobil", "mobile", "phone"),
+            "blood_type": ("blood_type", "blood type", "blood"),
+            "language": ("language", "lang"),
+            "company": ("company", "org", "organization"),
+            "legal_agreement": ("legal_agreement", "legal agreement", "agreement"),
+            "insurance_validity": ("insurance_validity", "insurance validity", "insurance", "insurance valid"),
+            "profession_iqama": ("profession_iqama", "profession iqama", "iqama profession", "profession"),
+            "profession_work": ("profession_work", "profession work", "work profession", "job title"),
+            "location": ("location", "loc"),
+            "induction_date": ("induction_date", "induction date", "induction"),
+            "status": ("status", "state"),
+        }
+
+        col = {}
+        for key, alts in aliases.items():
+            for h in headers:
+                if h in alts:
+                    col[key] = headers.index(h)
+                    break
+
+        if "full_name" not in col:
+            raise HTTPException(400, "Excel must have a 'full_name' or 'name' column")
+
+        imported, skipped = 0, 0
+        errors = []
+        async with conn.transaction():
+            for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    full_name = str(row[col["full_name"]]).strip() if row[col["full_name"]] else ""
+                    if not full_name:
+                        skipped += 1
+                        continue
+                    gender = str(row[col["gender"]]).strip() if "gender" in col and row[col["gender"]] else None
+                    nationality = str(row[col["nationality"]]).strip() if "nationality" in col and row[col["nationality"]] else None
+                    dob_str = str(row[col["date_of_birth"]]).strip() if "date_of_birth" in col and row[col["date_of_birth"]] else None
+                    dob = parse_date_or_none(dob_str)
+                    gov_id_number = str(row[col["gov_id_number"]]).strip() if "gov_id_number" in col and row[col["gov_id_number"]] else None
+                    mobile_number = str(row[col["mobile_number"]]).strip() if "mobile_number" in col and row[col["mobile_number"]] else None
+                    blood_type = str(row[col["blood_type"]]).strip() if "blood_type" in col and row[col["blood_type"]] else None
+                    language = str(row[col["language"]]).strip() if "language" in col and row[col["language"]] else None
+                    company = str(row[col["company"]]).strip() if "company" in col and row[col["company"]] else None
+                    legal_agreement = str(row[col["legal_agreement"]]).strip() if "legal_agreement" in col and row[col["legal_agreement"]] else None
+                    ins_str = str(row[col["insurance_validity"]]).strip() if "insurance_validity" in col and row[col["insurance_validity"]] else None
+                    insurance_validity = parse_date_or_none(ins_str)
+                    profession_iqama = str(row[col["profession_iqama"]]).strip() if "profession_iqama" in col and row[col["profession_iqama"]] else None
+                    profession_work = str(row[col["profession_work"]]).strip() if "profession_work" in col and row[col["profession_work"]] else None
+                    location = str(row[col["location"]]).strip() if "location" in col and row[col["location"]] else None
+                    ind_str = str(row[col["induction_date"]]).strip() if "induction_date" in col and row[col["induction_date"]] else None
+                    induction_date = parse_date_or_none(ind_str)
+                    status = str(row[col["status"]]).strip() if "status" in col and row[col["status"]] else None
+                    await conn.execute(
+                        """INSERT INTO Induction_Workbench
+                              (full_name, gender, nationality, date_of_birth, gov_id_number,
+                               mobile_number, blood_type, language, company, legal_agreement,
+                               insurance_validity, profession_iqama, profession_work, location,
+                               induction_date, status)
+                           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)""",
+                        full_name, gender, nationality, dob, gov_id_number,
+                        mobile_number, blood_type, language, company, legal_agreement,
+                        insurance_validity, profession_iqama, profession_work, location,
+                        induction_date, status,
+                    )
+                    imported += 1
+                except Exception as exc:
+                    skipped += 1
+                    errors.append(f"Row {row_idx}: {exc}")
+        return {"status": "ok", "imported": imported, "skipped": skipped, "errors": errors[:50]}
+    finally:
+        await conn.close()
+
+
+@app.get("/api/v1/induction-workbench/lookup")
+async def lookup_induction_workbench(request: Request, q: str = ""):
+    await require_permission(request, "view_all_applications")
+    if not q or len(q.strip()) < 2:
+        return {"matches": []}
+    q = q.strip()
+    conn = await get_conn()
+    try:
+        rows = await conn.fetch(
+            """SELECT iw_id, full_name, gender, nationality, date_of_birth, gov_id_number,
+                      mobile_number, blood_type, language, company, legal_agreement,
+                      insurance_validity, profession_iqama, profession_work, location,
+                      induction_date, status
+                 FROM Induction_Workbench
+                WHERE full_name ILIKE $1 OR gov_id_number ILIKE $1
+                LIMIT 20""",
+            f"%{q}%",
+        )
+        return {"matches": [dict(r) for r in rows]}
+    finally:
+        await conn.close()
+
+
+@app.get("/api/v1/admin/system-users")
+async def list_system_users(request: Request):
+    await require_permission(request, "manage_system_settings")
+    conn = await get_conn()
+    try:
+        rows = await conn.fetch(
+            "SELECT su_id, employee_name, gov_id_number, email, project, company, "
+            "job_title, location, mobile_number, nationality, role, created_at "
+            "FROM System_Users ORDER BY su_id DESC"
+        )
+        return {"entries": [dict(r) for r in rows]}
+    finally:
+        await conn.close()
+
+
+@app.post("/api/v1/admin/system-users/import")
+async def import_system_users(request: Request, file: UploadFile = File(...)):
+    await require_permission(request, "manage_system_settings")
+    conn = await get_conn()
+    try:
+        contents = await file.read()
+        from openpyxl import load_workbook
+        wb = load_workbook(BytesIO(contents))
+        ws = wb.active
+        headers = [str(cell.value).strip().lower() if cell.value else "" for cell in ws[1]]
+
+        aliases = {
+            "employee_name": ("employee_name", "employee name", "full name", "name"),
+            "gov_id_number": ("gov_id_number", "gov id number", "id number", "iqama/id", "iqama / id", "id"),
+            "email": ("email", "e-mail", "mail"),
+            "project": ("project", "proj", "project name"),
+            "company": ("company", "org", "organization"),
+            "job_title": ("job_title", "job title", "title", "position", "role title"),
+            "location": ("location", "loc", "site"),
+            "mobile_number": ("mobile_number", "mobile number", "mobile #", "mobile", "phone"),
+            "nationality": ("nationality", "nation"),
+            "role": ("role", "user role", "system role"),
+        }
+
+        col = {}
+        for key, alts in aliases.items():
+            for h in headers:
+                if h in alts:
+                    col[key] = headers.index(h)
+                    break
+
+        if "employee_name" not in col:
+            raise HTTPException(400, "Excel must have an 'employee_name' or 'name' column")
+
+        imported, skipped = 0, 0
+        errors = []
+        async with conn.transaction():
+            for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    employee_name = str(row[col["employee_name"]]).strip() if row[col["employee_name"]] else ""
+                    if not employee_name:
+                        skipped += 1
+                        continue
+                    gov_id_number = str(row[col["gov_id_number"]]).strip() if "gov_id_number" in col and row[col["gov_id_number"]] else None
+                    email = str(row[col["email"]]).strip() if "email" in col and row[col["email"]] else None
+                    project = str(row[col["project"]]).strip() if "project" in col and row[col["project"]] else None
+                    company = str(row[col["company"]]).strip() if "company" in col and row[col["company"]] else None
+                    job_title = str(row[col["job_title"]]).strip() if "job_title" in col and row[col["job_title"]] else None
+                    location = str(row[col["location"]]).strip() if "location" in col and row[col["location"]] else None
+                    mobile_number = str(row[col["mobile_number"]]).strip() if "mobile_number" in col and row[col["mobile_number"]] else None
+                    nationality = str(row[col["nationality"]]).strip() if "nationality" in col and row[col["nationality"]] else None
+                    role = str(row[col["role"]]).strip() if "role" in col and row[col["role"]] else None
+                    await conn.execute(
+                        """INSERT INTO System_Users
+                              (employee_name, gov_id_number, email, project, company, job_title,
+                               location, mobile_number, nationality, role)
+                           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)""",
+                        employee_name, gov_id_number, email, project, company, job_title,
+                        location, mobile_number, nationality, role,
+                    )
+                    imported += 1
+                except Exception as exc:
+                    skipped += 1
+                    errors.append(f"Row {row_idx}: {exc}")
+        return {"status": "ok", "imported": imported, "skipped": skipped, "errors": errors[:50]}
     finally:
         await conn.close()
 
