@@ -962,13 +962,22 @@ async def required_permission_for_state_change(conn, current_state: str, new_sta
     return None
 
 
-def parse_date_or_none(s: Optional[str]) -> Optional[date]:
+def parse_date_or_none(s) -> Optional[date]:
     if not s:
         return None
-    try:
-        return datetime.strptime(s, "%Y-%m-%d").date()
-    except ValueError:
-        raise HTTPException(400, f"Invalid date format '{s}' (expected YYYY-MM-DD)")
+    # If openpyxl already parsed it as a datetime/date object
+    if isinstance(s, datetime):
+        return s.date()
+    if isinstance(s, date):
+        return s
+    s = str(s).strip()
+    for fmt in ("%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%m-%d-%Y",
+                "%Y/%m/%d", "%d.%m.%Y", "%Y.%m.%d"):
+        try:
+            return datetime.strptime(s, fmt).date()
+        except ValueError:
+            continue
+    raise HTTPException(400, f"Invalid date format '{s}'")
 
 
 # ============================================================
