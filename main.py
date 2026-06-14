@@ -63,7 +63,7 @@ import asyncpg
 import bcrypt
 from dotenv import load_dotenv
 from fastapi import (Cookie, Depends, FastAPI, File, Form, HTTPException, Path as FPath,
-                     Request, Response, UploadFile)
+                     Query, Request, Response, UploadFile)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -2206,23 +2206,36 @@ async def list_all_applications(request: Request):
 
 
 @app.get("/api/v1/applications/export")
-async def export_applications_xlsx(request: Request):
+async def export_applications_xlsx(request: Request, status: Optional[str] = Query(None), search: Optional[str] = Query(None)):
     await require_permission(request, "view_all_applications")
     conn = await get_conn()
     try:
+        where_clauses = []
+        params = []
+        if status:
+            where_clauses.append(f"s.workflow_state = ${len(params) + 1}")
+            params.append(status)
+        if search:
+            where_clauses.append(
+                f"(s.full_name ILIKE ${len(params) + 1} OR s.organization ILIKE ${len(params) + 1} OR CAST(s.application_id AS TEXT) ILIKE ${len(params) + 1})"
+            )
+            params.append(f"%{search}%")
+        where_sql = " AND ".join(where_clauses) if where_clauses else "TRUE"
         rows = await conn.fetch(
-            """SELECT s.application_id, s.created_at, s.workflow_state, s.workflow_type, s.form_variant,
-                      s.full_name, s.email, s.mobile_number, s.whatsapp_number,
-                      s.gov_id_type, s.gov_id_number, s.blood_type,
-                      s.job_title, s.employee_number, s.organization, s.subcontractor,
-                      s.is_third_party_sponsor, s.date_joined, s.reports_to,
-                      s.iqama_expiry_date, s.passport_expiry_date, s.insurance_expiry_date,
-                      s.gender, s.nationality, s.date_of_birth, s.passport_number,
-                      s.language, s.safety_induction_date, s.sponsor_name,
-                      u.full_name AS submitter_name
-                 FROM Site_Access_ID s
-            LEFT JOIN App_Users u ON u.user_id = s.submitted_by_user_id
-             ORDER BY s.application_id ASC"""
+            f"""SELECT s.application_id, s.created_at, s.workflow_state, s.workflow_type, s.form_variant,
+                       s.full_name, s.email, s.mobile_number, s.whatsapp_number,
+                       s.gov_id_type, s.gov_id_number, s.blood_type,
+                       s.job_title, s.employee_number, s.organization, s.subcontractor,
+                       s.is_third_party_sponsor, s.date_joined, s.reports_to,
+                       s.iqama_expiry_date, s.passport_expiry_date, s.insurance_expiry_date,
+                       s.gender, s.nationality, s.date_of_birth, s.passport_number,
+                       s.language, s.safety_induction_date, s.sponsor_name,
+                       u.full_name AS submitter_name
+                  FROM Site_Access_ID s
+             LEFT JOIN App_Users u ON u.user_id = s.submitted_by_user_id
+                 WHERE {where_sql}
+              ORDER BY s.application_id ASC""",
+            *params,
         )
     finally:
         await conn.close()
