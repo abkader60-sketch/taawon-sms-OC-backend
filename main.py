@@ -127,7 +127,11 @@ if USE_S3:
             aws_secret_access_key=MINIO_SECRET_KEY,
             region_name=os.getenv("AWS_REGION", "us-east-1"),
         )
-        s3_client.create_bucket(Bucket=MINIO_BUCKET)
+        # Check if bucket exists before creating it to avoid errors
+        try:
+            s3_client.head_bucket(Bucket=MINIO_BUCKET)
+        except Exception:
+            s3_client.create_bucket(Bucket=MINIO_BUCKET)
         print(f"MinIO/S3 bucket '{MINIO_BUCKET}' ready at {endpoint}")
     except Exception as exc:
         print(f"WARNING: MinIO/S3 init failed ({exc}). Falling back to local filesystem.", file=sys.stderr)
