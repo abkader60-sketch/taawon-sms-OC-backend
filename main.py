@@ -2200,14 +2200,38 @@ async def list_pending(request: Request):
 
 
 @app.get("/api/v1/applications")
-async def list_all_applications(request: Request):
+async def list_all_applications(request: Request, status: Optional[str] = Query(None), search: Optional[str] = Query(None)):
     await require_permission(request, "view_all_applications")
     conn = await get_conn()
     try:
+        where_clauses = []
+        params = []
+        if status:
+            where_clauses.append(f"workflow_state = ${len(params) + 1}")
+            params.append(status)
+        if search:
+            q = f"%{search}%"
+            where_clauses.append(
+                f"(full_name ILIKE ${len(params) + 1}"
+                f" OR organization ILIKE ${len(params) + 1}"
+                f" OR subcontractor ILIKE ${len(params) + 1}"
+                f" OR gov_id_number ILIKE ${len(params) + 1}"
+                f" OR nationality ILIKE ${len(params) + 1}"
+                f" OR mobile_number ILIKE ${len(params) + 1}"
+                f" OR email ILIKE ${len(params) + 1}"
+                f" OR employee_number ILIKE ${len(params) + 1}"
+                f" OR CAST(application_id AS TEXT) ILIKE ${len(params) + 1})"
+            )
+            params.append(q)
+        where_sql = " AND ".join(where_clauses) if where_clauses else "TRUE"
         rows = await conn.fetch(
-            """SELECT application_id, full_name, organization, workflow_state, created_at
-                 FROM Site_Access_ID
-             ORDER BY application_id DESC"""
+            f"""SELECT application_id, full_name, organization, subcontractor,
+                       gov_id_number, nationality, mobile_number, email,
+                       employee_number, workflow_state, created_at
+                  FROM Site_Access_ID
+                 WHERE {where_sql}
+              ORDER BY application_id DESC""",
+            *params,
         )
         return {"applications": [dict(r) for r in rows]}
     finally:
